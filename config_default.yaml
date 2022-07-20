@@ -1,0 +1,24 @@
+farben:  # color codes in hex
+  vfr: 00FF00  # grün
+  vfr_bei_wind: 007D00  # grün fade für wind
+  mvfr: 0000FF  # blau
+  mvfr_bei_wind: 00007D  # blau fade für wind
+  ifr: FF0000  # rot
+  ifr_bei_wind: 7D0000  # rot fade für wind
+  lifr: 7D007D  # magenta
+  lifr_bei_wind: 4B004B  # magenta fade für wind
+  blitze: FFFFFF  # weiß
+  sturm: FFFF00  # stürmisch
+
+wind:  # windgeschwindigkeiten
+  normal: 15  # ab 15 knoten leichtes blinken
+  hoch: 25  # ab 25 knoten starkes blinken
+  frequenz: 1  # blinken dauert eine sekunde
+
+zeiten:  # 24 Stunden format
+  an: "08:00"  # früh um 8 geht alles an
+  aus: "21:00"  # abends um 21 Uhr schaltet sich alles ab
+
+wlan:
+  ssid: FRITZ!BOX 1234
+  passwort: 12345678

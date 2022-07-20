@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>METAR KARTE EINSTELLUNGEN</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10 col-xl-8 mx-auto">
+            {% if request.method == "POST" %}
+                <div class="alert alert-dark mt-5" role="alert">
+                  Die Einstellungen wurden gespeichert und das System startet jetzt neu. Daher wird das METAR WLAN jetzt ausgeschaltet und es wird versucht, eine Verbindung mit dem eingegebenen WLAN herzustellen. Sollte das nicht klappen, dann wird das METAR WLAN in ca. 5 Minuten wieder aktiv und du kannst die Einstellungen nochmal anpassen.
+                </div>
+            {% else %}
+                <h5 class="h5 mb-4 mt-4">Hier kannst Du Deine METAR Karte konfigurieren und individuell einstellen. Sobald Du auf speichern klickst, startet das System mit den geänderten Einstellungen neu.</h5>
+                <div class="my-4">
+                <nav>
+                    <div class="nav nav-tabs" role="tablist">
+                        <button class="nav-link active" id="wlan-tab" data-bs-toggle="tab" data-bs-target="#wlan" type="button" role="tab" aria-controls="wlan" aria-selected="true">WLAN</button>
+                        <button class="nav-link" id="farben-tab" data-bs-toggle="tab" data-bs-target="#farben" type="button" role="tab" aria-controls="farben" aria-selected="false">Farben</button>
+                        <button class="nav-link" id="wind-tab" data-bs-toggle="tab" data-bs-target="#wind" type="button" role="tab" aria-controls="wind" aria-selected="false">Wind</button>
+                        <button class="nav-link" id="zeiten-tab" data-bs-toggle="tab" data-bs-target="#zeiten" type="button" role="tab" aria-controls="zeiten" aria-selected="false">Zeiten</button>
+                    </div>
+                </nav>
+                <form id="settings" method="POST" action="/">
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="wlan" role="tabpanel" aria-labelledby="wlan">
+                            <div class="alert alert-dark mt-3" role="alert">
+                              Die METAR Karte benötigt zwingend eine WLAN-Verbindung, um die neusten Wetterinformationen abzurufen. Bitte gib daher hier Deine WLAN-Daten ein. Wenn Du auf speichern klickst und das System neu startet, dann versucht es sich mit dem hier eingestellten WLAN zu verbinden. Wenn es das nicht kann, dann wird nach einiger Zeit automatisch wieder der Hotspot aktiviert und Du kannst die Einstellung hier nochmal ändern.
+                            </div>
+                            <div class="form-group col-12 mt-2">
+                                <label for="ssid">SSID (Name) *</label>
+                                <input required type="text" class="form-control" id="ssid" name="ssid" value="{{ config.wlan.ssid }}">
+                            </div>
+                            <div class="form-group col-12 mt-2">
+                                <label for="passwort">WLAN Passwort *</label>
+                                <input required type="password" class="form-control" id="passwort" name="passwort" value="{{ config.wlan.passwort }}">
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="farben" role="tabpanel" aria-labelledby="farben">
+                            <div class="form-row">
+                                {% for name, farbe in config.farben.items() %}
+                                    <div class="form-group col-6 mt-2 p-2">
+                                        <label for="{{ name }}">{{ name.replace('_', ' ') }}</label>
+                                        <input type="color" name="{{ name }}" id="{{ name }}" value="{{ farbe }}" class="form-control input-lg">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="wind" role="tabpanel" aria-labelledby="wind">
+                            <div class="form-group col-12 mt-2">
+                                <label for="normal">Wind Blinken ab (kt)</label>
+                                <input type="number" min="0" class="form-control" id="normal" name="normal" value="{{ config.wind.normal }}">
+                            </div>
+                            <div class="form-group col-12 mt-2">
+                                <label for="hoch">Hoher Wind Blinken ab (kt)</label>
+                                <input type="number" min="0" class="form-control" id="hoch" name="hoch" value="{{ config.wind.hoch }}">
+                            </div>
+                            <div class="form-group col-12 mt-2">
+                                <label for="frequenz">Frequenz des Blinkens (sek)</label>
+                                <input type="number" min="1" class="form-control" id="frequenz" name="frequenz" value="{{ config.wind.frequenz }}">
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="zeiten" role="tabpanel" aria-labelledby="zeiten">
+                            <div class="form-group col-12 mt-2">
+                                <label for="an">Einschalten</label>
+                                <input type="time" class="form-control" id="an" name="an" value="{{ config.zeiten.an }}">
+                            </div>
+                            <div class="form-group col-12 mt-2">
+                                <label for="aus">Ausschalten</label>
+                                <input type="time" class="form-control" id="aus" name="aus" value="{{ config.zeiten.aus }}">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="reset" class="btn btn-primary mt-4">Einstellungen zurücksetzen</button>
+                    <button type="submit" class="btn btn-success mt-4">Speichern und Neustart</button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+</body>
+<script>
+</script>
+<script src="{{ url_for('static', filename='js/bootstrap.bundle.js') }}"></script>
+</html>

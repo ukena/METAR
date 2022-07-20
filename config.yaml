@@ -1,0 +1,21 @@
+farben:
+  blitze: '#ffffff'
+  ifr: '#ff0000'
+  ifr_bei_wind: '#7d0000'
+  lifr: '#7d007d'
+  lifr_bei_wind: '#4b004b'
+  mvfr: '#0000ff'
+  mvfr_bei_wind: '#00007d'
+  sturm: '#ffff00'
+  vfr: '#00ff00'
+  vfr_bei_wind: '#007d00'
+wind:
+  frequenz: '1'
+  hoch: '25'
+  normal: '15'
+wlan:
+  passwort: '12345678'
+  ssid: FRITZ!BOX 12345
+zeiten:
+  an: 08:00
+  aus: '21:00'
