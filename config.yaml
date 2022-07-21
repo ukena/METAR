@@ -1,5 +1,6 @@
 farben:
   blitze: '#ffffff'
+  helligkeit: '0.5'
   hoher_wind: '#ffff00'
   ifr: '#ff0000'
   ifr_bei_wind: '#7d0000'
@@ -17,5 +18,5 @@ wlan:
   passwort: '12345678'
   ssid: FRITZ!BOX 1234
 zeiten:
-  an: 08:00
-  aus: '21:00'
+  an: '8'
+  aus: '22'

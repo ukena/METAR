@@ -9,6 +9,7 @@ farben:  # color codes in hex
   lifr_bei_wind: "#4B004B"  # magenta fade für wind
   blitze: "#FFFFFF"  # weiß
   hoher_wind: "#FFFF00"  # stürmisch
+  helligkeit: '0.5'  # helligkeit der LEDs
 
 wind:  # windgeschwindigkeiten
   normal: 15  # ab 15 knoten leichtes blinken

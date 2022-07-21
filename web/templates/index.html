@@ -51,6 +51,11 @@
                                         <input type="color" name="{{ ind }}" id="{{ ind }}" value="{{ config.farben[ind] }}" class="form-control input-lg">
                                     </div>
                                 {% endfor %}
+                                <div class="form-group col-12 mt-2 p-2">
+                                    <label for="helligkeit">Helligkeit</label>
+                                    <input type="range" min="0.1" max="1" name="helligkeit" id="helligkeit" value="{{ config.farben.helligkeit }}" step="0.1" class="form-control input-lg">
+                                    <p class="text-center" id="anzeige"></p>
+                                </div>
                             </div>
                         </div>
                         <div class="tab-pane fade" id="wind" role="tabpanel" aria-labelledby="wind">
@@ -69,12 +74,12 @@
                         </div>
                         <div class="tab-pane fade" id="zeiten" role="tabpanel" aria-labelledby="zeiten">
                             <div class="form-group col-12 mt-2">
-                                <label for="an">Einschalten</label>
-                                <input type="time" class="form-control" id="an" name="an" value="{{ config.zeiten.an }}">
+                                <label for="an">Einschalten (z.B. 8 = 08:00 Uhr früh)</label>
+                                <input type="number" min="1" max="24" class="form-control" id="an" name="an" value="{{ config.zeiten.an }}">
                             </div>
                             <div class="form-group col-12 mt-2">
-                                <label for="aus">Ausschalten</label>
-                                <input type="time" class="form-control" id="aus" name="aus" value="{{ config.zeiten.aus }}">
+                                <label for="aus">Ausschalten (z.B. 20 = 20:00 Uhr abends)</label>
+                                <input type="number" min="1" max="24" class="form-control" id="aus" name="aus" value="{{ config.zeiten.aus }}">
                             </div>
                         </div>
                         <div class="tab-pane fade" id="update" role="tabpanel" aria-labelledby="update">
@@ -102,6 +107,19 @@
 
 </body>
 <script>
+    const slider = document.querySelector("#helligkeit");
+    const output = document.querySelector("#anzeige");
+    document.addEventListener("DOMContentLoaded", function() {
+      output.innerHTML = slider.value;
+    });
+
+    document.addEventListener("reset", function() {
+      output.innerHTML = "0.5";
+    });
+
+    slider.addEventListener("input", function () {
+        output.innerHTML = this.value;
+    });
 </script>
 <script src="{{ url_for('static', filename='js/bootstrap.bundle.js') }}"></script>
 </html>
