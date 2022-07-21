@@ -25,12 +25,13 @@
                         <button class="nav-link" id="farben-tab" data-bs-toggle="tab" data-bs-target="#farben" type="button" role="tab" aria-controls="farben" aria-selected="false">Farben</button>
                         <button class="nav-link" id="wind-tab" data-bs-toggle="tab" data-bs-target="#wind" type="button" role="tab" aria-controls="wind" aria-selected="false">Wind</button>
                         <button class="nav-link" id="zeiten-tab" data-bs-toggle="tab" data-bs-target="#zeiten" type="button" role="tab" aria-controls="zeiten" aria-selected="false">Zeiten</button>
+                        <button class="nav-link" id="update-tab" data-bs-toggle="tab" data-bs-target="#update" type="button" role="tab" aria-controls="update" aria-selected="false">Update</button>
                     </div>
                 </nav>
                 <form id="settings" method="POST" action="/">
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="wlan" role="tabpanel" aria-labelledby="wlan">
-                            <div class="alert alert-dark mt-3" role="alert">
+                            <div class="alert alert-danger mt-3" role="alert">
                               Die METAR Karte benötigt zwingend eine WLAN-Verbindung, um die neusten Wetterinformationen abzurufen. Bitte gib daher hier Deine WLAN-Daten ein. Wenn Du auf speichern klickst und das System neu startet, dann versucht es sich mit dem hier eingestellten WLAN zu verbinden. Wenn es das nicht kann, dann wird nach einiger Zeit automatisch wieder der Hotspot aktiviert und Du kannst die Einstellung hier nochmal ändern.
                             </div>
                             <div class="form-group col-12 mt-2">
@@ -44,10 +45,10 @@
                         </div>
                         <div class="tab-pane fade" id="farben" role="tabpanel" aria-labelledby="farben">
                             <div class="form-row">
-                                {% for name, farbe in config.farben.items() %}
+                                {% for ind in ("vfr", "vfr_bei_wind", "mvfr", "mvfr_bei_wind", "ifr", "ifr_bei_wind", "lifr", "lifr_bei_wind", "blitze", "hoher_wind") %}
                                     <div class="form-group col-6 mt-2 p-2">
-                                        <label for="{{ name }}">{{ name.replace('_', ' ') }}</label>
-                                        <input type="color" name="{{ name }}" id="{{ name }}" value="{{ farbe }}" class="form-control input-lg">
+                                        <label for="{{ ind }}">{{ ind.replace('_', ' ') }}</label>
+                                        <input type="color" name="{{ ind }}" id="{{ ind }}" value="{{ config.farben[ind] }}" class="form-control input-lg">
                                     </div>
                                 {% endfor %}
                             </div>
@@ -74,6 +75,19 @@
                             <div class="form-group col-12 mt-2">
                                 <label for="aus">Ausschalten</label>
                                 <input type="time" class="form-control" id="aus" name="aus" value="{{ config.zeiten.aus }}">
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="update" role="tabpanel" aria-labelledby="update">
+                            <div class="alert alert-danger mt-3" role="alert">
+                              Am besten Du lässt "kein Update" stehen, wenn alles funktioniert. Generell solltest Du hier nur etwas machen, wenn es bei Dir Probleme gibt und ich Dir den korrekten Branch genannt habe.<br>Die Idee hinter dieser Einstellungsmöglichkeit ist nur, dass Du mich bei Problemen in der Software kontaktierst, ich das Problem löse, Dir den branch nenne und dann kannst Du hier die neue Version herunterladen.
+                            </div>
+                            <div class="form-group col-12 mt-2">
+                                <label for="update-branch">Branch</label>
+                                <select class="form-control" id="update-branch" name="update-branch">
+                                    <option selected="selected">kein Update</option>
+                                    <option>main</option>
+                                    <option>dev</option>
+                                </select>
                             </div>
                         </div>
                     </div>

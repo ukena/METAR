@@ -1,14 +1,14 @@
 farben:  # color codes in hex
-  vfr: 00FF00  # grün
-  vfr_bei_wind: 007D00  # grün fade für wind
-  mvfr: 0000FF  # blau
-  mvfr_bei_wind: 00007D  # blau fade für wind
-  ifr: FF0000  # rot
-  ifr_bei_wind: 7D0000  # rot fade für wind
-  lifr: 7D007D  # magenta
-  lifr_bei_wind: 4B004B  # magenta fade für wind
-  blitze: FFFFFF  # weiß
-  sturm: FFFF00  # stürmisch
+  vfr: "#00FF00"  # grün
+  vfr_bei_wind: "#007D00"  # grün fade für wind
+  mvfr: "#0000FF"  # blau
+  mvfr_bei_wind: "#00007D"  # blau fade für wind
+  ifr: "#FF0000"  # rot
+  ifr_bei_wind: "#7D0000"  # rot fade für wind
+  lifr: "#7D007D"  # magenta
+  lifr_bei_wind: "#4B004B"  # magenta fade für wind
+  blitze: "#FFFFFF"  # weiß
+  hoher_wind: "#FFFF00"  # stürmisch
 
 wind:  # windgeschwindigkeiten
   normal: 15  # ab 15 knoten leichtes blinken
