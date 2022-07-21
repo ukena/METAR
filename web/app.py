@@ -1,3 +1,4 @@
+import subprocess
 from flask import Flask, render_template, request
 import yaml
 
@@ -9,7 +10,6 @@ def index():
         config = yaml.safe_load(f)
 
     if request.method == "POST":
-        print(request.form)
         for key, data in request.form.items():
             if key in ("ssid", "passwort"):
                 config["wlan"][key] = data
@@ -20,21 +20,39 @@ def index():
             elif key in ("an", "aus"):
                 config["zeiten"][key] = data
             elif key == "update-branch":
-                if data == "main":
-                    # subprocess.call(["git", "checkout", "main"])
-                    # subprocess.call(["git", "pull", "origin", "main"])
-                    pass
-                elif data == "dev":
-                    # subprocess.call(["git", "checkout", "dev"])
-                    # subprocess.call(["git", "pull", "origin", "dev"])
-                    pass
+                if data in ("master", "dev"):
+                    subprocess.call(["git", "fetch", "--all"])
+                    subprocess.call(["git", "reset", "--hard", f"origin/{data}"])
+
         with open("config.yaml", "w") as f:
             yaml.dump(config, f)
-        # TODO: write wifi setting into wpa_supplicant.conf, reboot
 
+        # neue WLAN Einstellungen in wpa_supplicant.conf schreiben
+        with open("/etc/wpa_supplicant/wpa_supplicant-wlan0.conf", "r") as f:
+            in_file = f.readlines()
+            f.close()
+
+        out_file = []
+        edited_psk = False
+        edited_ssid = False
+        for line in in_file:
+            if line.startswith("psk") and not edited_psk:
+                line = 'psk=' + '"' + config["wlan"]["passwort"] + '"' + '\n'
+                edited_psk = True
+            elif line.startswith("ssid") and not edited_ssid:
+                line = 'ssid=' + '"' + config["wlan"]["ssid"] + '"' + '\n'
+                edited_ssid = True
+            out_file.append(line)
+
+        with open("/etc/wpa_supplicant/wpa_supplicant-wlan0.conf", "w") as f:
+            for line in out_file:
+                f.write(line)
+
+        # neustart
+        # subprocess.call(["reboot", "-h", "now"])
 
     return render_template("index.html", config=config)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run()
