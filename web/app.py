@@ -24,37 +24,40 @@ def index():
                     subprocess.call(["git", "fetch", "--all"])
                     subprocess.call(["git", "reset", "--hard", f"origin/{data}"])
 
+        # neue config parsen
         with open("config.yaml", "w") as f:
             yaml.dump(config, f)
 
         # zeiten in crontab schreiben
-        cron_an = f"*/5 {config['zeiten']['an']}-{int(config['zeiten']['aus']) - 1} * * *  /home/pi/metar/karte/refresh.sh"
-        cron_aus = f"*/5 {config['zeiten']['aus']} * * *     /home/pi/metar/karte/lightsoff.sh"
+        with open("karte/crontab", "w") as f:
+            lines = f.readlines()
+            cron_an = f"*/5 {config['zeiten']['an']}-{int(config['zeiten']['aus']) - 1} * * *  /home/pi/metar/karte/refresh.sh"
+            cron_aus = f"*/5 {config['zeiten']['aus']} * * *     /home/pi/metar/karte/lightsoff.sh"
+            f.writelines(lines[:-2] + [cron_an, cron_aus])
 
+        # neue WLAN Einstellungen in wpa_supplicant.conf schreiben
+        with open("/etc/wpa_supplicant/wpa_supplicant-wlan0.conf", "r") as f:
+            in_file = f.readlines()
+            f.close()
 
-        # # neue WLAN Einstellungen in wpa_supplicant.conf schreiben
-        # with open("/etc/wpa_supplicant/wpa_supplicant-wlan0.conf", "r") as f:
-        #     in_file = f.readlines()
-        #     f.close()
-        #
-        # out_file = []
-        # edited_psk = False
-        # edited_ssid = False
-        # for line in in_file:
-        #     if line.startswith("psk") and not edited_psk:
-        #         line = 'psk=' + '"' + config["wlan"]["passwort"] + '"' + '\n'
-        #         edited_psk = True
-        #     elif line.startswith("ssid") and not edited_ssid:
-        #         line = 'ssid=' + '"' + config["wlan"]["ssid"] + '"' + '\n'
-        #         edited_ssid = True
-        #     out_file.append(line)
-        #
-        # with open("/etc/wpa_supplicant/wpa_supplicant-wlan0.conf", "w") as f:
-        #     for line in out_file:
-        #         f.write(line)
+        out_file = []
+        edited_psk = False
+        edited_ssid = False
+        for line in in_file:
+            if line.startswith("psk") and not edited_psk:
+                line = 'psk=' + '"' + config["wlan"]["passwort"] + '"' + '\n'
+                edited_psk = True
+            elif line.startswith("ssid") and not edited_ssid:
+                line = 'ssid=' + '"' + config["wlan"]["ssid"] + '"' + '\n'
+                edited_ssid = True
+            out_file.append(line)
+
+        with open("/etc/wpa_supplicant/wpa_supplicant-wlan0.conf", "w") as f:
+            for line in out_file:
+                f.write(line)
 
         # neustart
-        # subprocess.call(["reboot", "-h", "now"])
+        subprocess.call(["reboot", "-h", "now"])
 
     return render_template("index.html", config=config)
 
