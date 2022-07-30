@@ -2,3 +2,10 @@ venv
 .idea
 __pycache__
 .local
+.cache
+
+.bash_history
+.bash_logout
+.bashrc
+.profile
+log.txt
