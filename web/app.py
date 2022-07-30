@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    with open("config.yaml") as f:
+    with open("/home/pi/config.yaml") as f:
         config = yaml.safe_load(f)
 
     if request.method == "POST":
@@ -25,15 +25,15 @@ def index():
                     subprocess.call(["git", "reset", "--hard", f"origin/{data}"])
 
         # neue config parsen
-        with open("config.yaml", "w") as f:
+        with open("/home/pi/config.yaml", "w") as f:
             yaml.dump(config, f)
 
         # zeiten in crontab schreiben
-        with open("karte/crontab", "w") as f:
-            lines = f.readlines()
+        with open("/home/pi/karte/crontab", "w+") as f:
             cron_an = f"*/5 {config['zeiten']['an']}-{int(config['zeiten']['aus']) - 1} * * *  /home/pi/metar/karte/refresh.sh"
             cron_aus = f"*/5 {config['zeiten']['aus']} * * *     /home/pi/metar/karte/lightsoff.sh"
-            f.writelines(lines[:-2] + [cron_an, cron_aus])
+            f.write(cron_an + "\n")
+            f.write(cron_aus + "\n")
 
         # neue WLAN Einstellungen in wpa_supplicant.conf schreiben
         with open("/etc/wpa_supplicant/wpa_supplicant-wlan0.conf", "r") as f:
@@ -44,11 +44,11 @@ def index():
         edited_psk = False
         edited_ssid = False
         for line in in_file:
-            if line.startswith("psk") and not edited_psk:
-                line = 'psk=' + '"' + config["wlan"]["passwort"] + '"' + '\n'
+            if "psk" in line and not edited_psk:
+                line = '    psk=' + '"' + config["wlan"]["passwort"] + '"' + '\n'
                 edited_psk = True
-            elif line.startswith("ssid") and not edited_ssid:
-                line = 'ssid=' + '"' + config["wlan"]["ssid"] + '"' + '\n'
+            elif "ssid" in line and not edited_ssid:
+                line = '    ssid=' + '"' + config["wlan"]["ssid"] + '"' + '\n'
                 edited_ssid = True
             out_file.append(line)
 
@@ -57,10 +57,10 @@ def index():
                 f.write(line)
 
         # neustart
-        subprocess.call(["reboot", "-h", "now"])
+        subprocess.call(["reboot"])
 
     return render_template("index.html", config=config)
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0", port=80)
