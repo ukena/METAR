@@ -25,10 +25,11 @@
                         <button class="nav-link" id="farben-tab" data-bs-toggle="tab" data-bs-target="#farben" type="button" role="tab" aria-controls="farben" aria-selected="false">Farben</button>
                         <button class="nav-link" id="wind-tab" data-bs-toggle="tab" data-bs-target="#wind" type="button" role="tab" aria-controls="wind" aria-selected="false">Wind</button>
                         <button class="nav-link" id="zeiten-tab" data-bs-toggle="tab" data-bs-target="#zeiten" type="button" role="tab" aria-controls="zeiten" aria-selected="false">Zeiten</button>
+                        <button class="nav-link" id="flugplaetze-tab" data-bs-toggle="tab" data-bs-target="#flugplaetze" type="button" role="tab" aria-controls="flugplaetze" aria-selected="false">Flugplätze</button>
                         <button class="nav-link" id="update-tab" data-bs-toggle="tab" data-bs-target="#update" type="button" role="tab" aria-controls="update" aria-selected="false">Update</button>
                     </div>
                 </nav>
-                <form id="settings" method="POST" action="/">
+                <form id="einstellungen" method="POST" action="/">
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="wlan" role="tabpanel" aria-labelledby="wlan">
                             <div class="alert alert-danger mt-3" role="alert">
@@ -53,7 +54,7 @@
                                 {% endfor %}
                                 <div class="form-group col-12 mt-2 p-2">
                                     <label for="helligkeit">Helligkeit</label>
-                                    <input type="range" min="0.1" max="1" name="helligkeit" id="helligkeit" value="{{ config.farben.helligkeit }}" step="0.1" class="form-control input-lg">
+                                    <input autocomplete="off" type="range" min="0.1" max="1" name="helligkeit" id="helligkeit" value="{{ config.farben.helligkeit }}" step="0.1" class="form-control input-lg">
                                     <p class="text-center" id="anzeige"></p>
                                 </div>
                             </div>
@@ -82,6 +83,14 @@
                                 <input type="number" min="1" max="24" class="form-control" id="aus" name="aus" value="{{ config.zeiten.aus }}">
                             </div>
                         </div>
+                        <div class="tab-pane fade" id="flugplaetze" role="tabpanel" aria-labelledby="flugplaetze">
+                            <div class="alert alert-danger mt-3" role="alert">
+                              Über diese Liste kann die Reihenfolge der Flugplätze festgelegt werden. Am besten Du lässt die Liste so wie sie ist. Nur falls Du z.B. einen Flugplatz nicht anzeigen lassen möchtest, dann kannst Du ihn durch "NULL" ersetzen. Allgemein kannst Du hier aber viel kaputt machen: Wenn Du z.B. einen Flugplatz hinzufügst dann verschieben sich alle Flugplätze um 1 und die LEDs leuchten womöglich nicht mehr an der richtigen Stelle. "NULL" bedeutet, dass die jeweilige LED am Strang nicht leuchtet.<br>An einigen Stellen steht schon "NULL", weil der LED Strang alle 5cm eine LED hat, die Bohrungen aber weiter auseinanderliegen und daher manche LEDs nicht leuchten sollen.
+                            </div>
+                            <div class="form-group col-12 mt-2">
+                                <textarea autocomplete="off" name="flugplaetze" rows="{{ config.flugplaetze | length }}" style="width: 100%;">{% for icao in config.flugplaetze %}{% if not loop.last %}{{ icao | string + "\n" }}{% else %}{{ icao | string }}{% endif %}{% endfor %}</textarea>
+                            </div>
+                        </div>
                         <div class="tab-pane fade" id="update" role="tabpanel" aria-labelledby="update">
                             <div class="alert alert-danger mt-3" role="alert">
                               Am besten Du lässt "kein Update" stehen, wenn alles funktioniert. Generell solltest Du hier nur etwas machen, wenn es bei Dir Probleme gibt und ich Dir den korrekten Branch genannt habe.<br>Die Idee hinter dieser Einstellungsmöglichkeit ist nur, dass Du mich bei Problemen in der Software kontaktierst, ich das Problem löse, Dir den branch nenne und dann kannst Du hier die neue Version herunterladen.
@@ -97,6 +106,7 @@
                         </div>
                     </div>
                     <button type="reset" class="btn btn-primary mt-4">Einstellungen zurücksetzen</button>
+                    <button type="button" class="btn btn-secondary mt-4" id="standard">Einstellungen auf Standardwerte zurücksetzen</button>
                     <button type="submit" class="btn btn-success mt-4">Speichern und Neustart</button>
                 </form>
             </div>
@@ -106,6 +116,31 @@
 </div>
 
 </body>
+<script>
+    const button = document.querySelector("#standard");
+    let formular = document.querySelector("#einstellungen")
+    button.addEventListener("click", function () {
+        {% for ind in ("vfr", "vfr_bei_wind", "mvfr", "mvfr_bei_wind", "ifr", "ifr_bei_wind", "lifr", "lifr_bei_wind", "blitze", "hoher_wind") %}
+        formular.elements["{{ ind }}"].value = "{{ standard.farben[ind] }}";
+        {% endfor %}
+        formular.elements["normal"].value = "{{ standard.wind.normal }}";
+
+        formular.elements["hoch"].value = "{{ standard.wind.hoch }}";
+
+        formular.elements["frequenz"].value = "{{ standard.wind.frequenz }}";
+
+        formular.elements["an"].value = "{{ standard.zeiten.an }}";
+
+        formular.elements["aus"].value = "{{ standard.zeiten.aus }}";
+
+        document.querySelector("#anzeige").innerHTML = "0.5";
+        document.querySelector("#helligkeit").value = "0.5";
+
+        formular.elements["flugplaetze"].value = "{% for icao in config.flugplaetze %}{% if not loop.last %}{{ icao | string + '\n' }}{% else %}{{ icao | string }}{% endif %}{% endfor %}";
+        formular.elements["flugplaetze"].rows = "{{ standard.flugplaetze | length }}"
+
+    });
+</script>
 <script>
     const slider = document.querySelector("#helligkeit");
     const output = document.querySelector("#anzeige");

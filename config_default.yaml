@@ -1,25 +1,113 @@
-farben:  # color codes in hex
-  vfr: "#00FF00"  # grün
-  vfr_bei_wind: "#007D00"  # grün fade für wind
-  mvfr: "#0000FF"  # blau
-  mvfr_bei_wind: "#00007D"  # blau fade für wind
-  ifr: "#FF0000"  # rot
-  ifr_bei_wind: "#7D0000"  # rot fade für wind
-  lifr: "#7D007D"  # magenta
-  lifr_bei_wind: "#4B004B"  # magenta fade für wind
-  blitze: "#FFFFFF"  # weiß
-  hoher_wind: "#FFFF00"  # stürmisch
-  helligkeit: '0.5'  # helligkeit der LEDs
-
-wind:  # windgeschwindigkeiten
-  normal: 15  # ab 15 knoten leichtes blinken
-  hoch: 25  # ab 25 knoten starkes blinken
-  frequenz: 1  # blinken dauert eine sekunde
-
-zeiten:  # 24 Stunden format
-  an: "08:00"  # früh um 8 geht alles an
-  aus: "21:00"  # abends um 21 Uhr schaltet sich alles ab
-
+farben:
+  blitze: '#ffffff'
+  helligkeit: '0.5'
+  hoher_wind: '#ffff00'
+  ifr: '#ff0000'
+  ifr_bei_wind: '#7d0000'
+  lifr: '#7d007d'
+  lifr_bei_wind: '#4b004b'
+  mvfr: '#0000ff'
+  mvfr_bei_wind: '#00007d'
+  vfr: '#00ff00'
+  vfr_bei_wind: '#007d00'
+wind:
+  frequenz: '1'
+  hoch: '25'
+  normal: '15'
 wlan:
-  ssid: FRITZ!BOX 1234
-  passwort: 12345678
+  passwort: '0123456789'
+  ssid: FRITZ!Box 7590 TN
+zeiten:
+  an: '8'
+  aus: '22'
+flugplaetze:
+  - "EDDR"
+  - "ETAR"
+  - "ETEK"
+  - "ELLX"
+  - "ETAD"
+  - "ETSB"
+  - "EDFH"
+  - "ETOU"
+  - "EDDF"
+  - "EDFM"
+  - "EDSB"
+  - "EDTL"
+  - "LFSB"
+  - "LSZH"
+  - "EDNY"
+  - "ETHL"
+  - "EDJA"
+  - "ETSL"
+  - "ETHA"
+  - "LOWI"
+  - "NULL"
+  - "LOWS"
+  - "NULL"
+  - "EDMO"
+  - "EDDM"
+  - "EDMA"
+  - "ETSI"
+  - "ETSN"
+  - "NULL"
+  - "EDDS"
+  - "EDTY"
+  - "ETHN"
+  - "ETIK"
+  - "ETEB"
+  - "EDDN"
+  - "ETIH"
+  - "ETIC"
+  - "EDQM"
+  - "LKKV"
+  - "LKLN"
+  - "NULL"
+  - "EDAC"
+  - "EDDP"
+  - "EDBC"
+  - "NULL"
+  - "EDDE"
+  - "NULL"
+  - "ETHF"
+  - "EDVK"
+  - "EDLP"
+  - "EDGS"
+  - "EDDK"
+  - "ETNN"
+  - "ETNG"
+  - "EDLN"
+  - "EDDL"
+  - "EDLV"
+  - "NULL"
+  - "EDLW"
+  - "EDDG"
+  - "ETWM"
+  - "EHGG"
+  - "EDWE"
+  - "ETNT"
+  - "ETMN"
+  - "NULL"
+  - "EDXW"
+  - "ETNH"
+  - "NULL"
+  - "EDHK"
+  - "EDHL"
+  - "EDDH"
+  - "EDHI"
+  - "ETHS"
+  - "EDVE"
+  - "ETHC"
+  - "EDDV"
+  - "ETNW"
+  - "ETHB"
+  - "ETND"
+  - "EDDW"
+  - "ETNL"
+  - "EDAH"
+  - "NULL"
+  - "EPSC"
+  - "EDDB"
+  - "NULL"
+  - "NULL"
+  - "ETSH"
+  - "EDDC"
