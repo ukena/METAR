@@ -12,7 +12,7 @@ def hex_to_grb(hex_color):
     rgb = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
     return rgb[1], rgb[0], rgb[2]
 
-config = yaml.safe_load(open("../config.yaml"))
+config = yaml.safe_load(open("/home/pi/config.yaml"))
 
 LED_COUNT = 50
 LED_PIN = board.D18
@@ -46,9 +46,7 @@ print("Running metar.py at " + datetime.datetime.now().strftime('%d/%m/%Y %H:%M'
 pixels = neopixel.NeoPixel(LED_PIN, LED_COUNT, brightness=LED_BRIGHTNESS, pixel_order=LED_ORDER, auto_write=False)
 
 # Read the airports file to retrieve list of airports and use as order for LEDs
-with open("airports") as f:
-    airports = f.readlines()
-airports = [x.strip() for x in airports]
+airports = [x.strip() for x in config.flugplaetze]
 
 url = "https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&hoursBeforeNow=5&mostRecentForEachStation=true&stationString=" + ",".join(
     [item for item in airports if item != "NULL"])
@@ -125,9 +123,6 @@ for metar in root.iter('METAR'):
 looplimit = int(round(BLINK_TOTALTIME_SECONDS / BLINK_SPEED))
 
 windCycle = False
-displayTime = 0.0
-displayAirportCounter = 0
-numAirports = len(stationList)
 
 while looplimit > 0:
     i = 0
