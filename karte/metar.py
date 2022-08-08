@@ -14,7 +14,7 @@ def hex_to_grb(hex_color):
 
 config = yaml.safe_load(open("/home/pi/config.yaml"))
 
-LED_COUNT = 50
+LED_COUNT = 100
 LED_PIN = board.D18
 LED_BRIGHTNESS = float(config["farben"]["helligkeit"])
 LED_ORDER = neopixel.GRB
