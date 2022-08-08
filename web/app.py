@@ -42,13 +42,6 @@ def index():
         with open("/home/pi/config.yaml" if PI else "config.yaml", "w") as f:
             yaml.dump(config, f)
 
-        # berechtigungen vergeben
-        subprocess.call(["sudo", "chmod", "+x", "/home/pi/karte/refresh.sh"])
-        subprocess.call(["sudo", "chmod", "+x", "/home/pi/karte/lightsoff.sh"])
-        subprocess.call(["sudo", "chmod", "+r", "/home/pi/karte/metar.py"])
-        subprocess.call(["sudo", "chmod", "+r", "/home/pi/karte/pixelsoff.py"])
-        subprocess.call(["sudo", "chmod", "+r", "/home/pi/config.yaml"])
-
         # neue WLAN Einstellungen in wpa_supplicant.conf schreiben
         if PI:
             with open("/etc/wpa_supplicant/wpa_supplicant-wlan0.conf", "r") as f:
