@@ -30,7 +30,7 @@ def index():
                     cron_aus = f"*/5 {config['zeiten']['aus']} * * *     /home/pi/karte/lightsoff.sh"
                     f.write(cron_an + "\n")
                     f.write(cron_aus + "\n")
-                subprocess.call(["/usr/bin/crontab", "/home/pi/karte/crontab", "-"])
+                subprocess.call(["sudo", "crontab", "/home/pi/karte/crontab", "-"])
             elif key == "flugplaetze":
                 config["flugplaetze"] = [i.strip() for i in data.split("\r")]
             elif key == "update-branch":
