@@ -7,6 +7,6 @@ sudo chmod 755 /usr/local/bin/autoAP.sh /usr/local/bin/install-autoAP /usr/local
 printf "METAR\nMETARKARTE\n\ny\n" | sudo /usr/local/bin/install-autoAP
 printf "\n" | sudo /usr/local/bin/rpi-networkconfig
 # include karte/settings.py in rc.local
-sudo sed -i '18i  sudo /usr/bin/python3 /home/pi/karte/settings.py' /etc/rc.local
+sudo sed -i '18i  sudo /usr/bin/python3 /home/pi/karte/settings.py &' /etc/rc.local
 # reboot
 sudo reboot
