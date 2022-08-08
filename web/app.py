@@ -35,13 +35,20 @@ def index():
         with open("/home/pi/config.yaml" if PI else "config.yaml", "w") as f:
             yaml.dump(config, f)
 
+        # berechtigungen vergeben
+        subprocess.call(["sudo", "chmod", "+", "x" "/home/pi/karte/refresh.sh"])
+        subprocess.call(["sudo", "chmod", "+", "x" "/home/pi/karte/lightsoff.sh"])
+        subprocess.call(["sudo", "chmod", "+", "r" "/home/pi/karte/metar.py"])
+        subprocess.call(["sudo", "chmod", "+", "r" "/home/pi/karte/pixelsoff.py"])
+        subprocess.call(["sudo", "chmod", "+", "r" "/home/pi/config.yaml"])
+
         # zeiten in crontab schreiben
         with open("/home/pi/karte/crontab" if PI else "karte/crontab", "w+") as f:
             cron_an = f"*/5 {config['zeiten']['an']}-{int(config['zeiten']['aus']) - 1} * * *  /home/pi/metar/karte/refresh.sh"
             cron_aus = f"*/5 {config['zeiten']['aus']} * * *     /home/pi/metar/karte/lightsoff.sh"
             f.write(cron_an + "\n")
             f.write(cron_aus + "\n")
-            subprocess.call(["crontab", "/home/pi/karte/crontab", "-"])
+            subprocess.call(["sudo", "crontab", "/home/pi/karte/crontab", "-"])
 
         # neue WLAN Einstellungen in wpa_supplicant.conf schreiben
         if PI:
