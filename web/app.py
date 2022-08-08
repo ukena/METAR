@@ -36,11 +36,11 @@ def index():
             yaml.dump(config, f)
 
         # berechtigungen vergeben
-        subprocess.call(["sudo", "chmod", "+x" "/home/pi/karte/refresh.sh"])
-        subprocess.call(["sudo", "chmod", "+x" "/home/pi/karte/lightsoff.sh"])
-        subprocess.call(["sudo", "chmod", "+r" "/home/pi/karte/metar.py"])
-        subprocess.call(["sudo", "chmod", "+r" "/home/pi/karte/pixelsoff.py"])
-        subprocess.call(["sudo", "chmod", "+r" "/home/pi/config.yaml"])
+        subprocess.call(["sudo", "chmod", "+x", "/home/pi/karte/refresh.sh"])
+        subprocess.call(["sudo", "chmod", "+x", "/home/pi/karte/lightsoff.sh"])
+        subprocess.call(["sudo", "chmod", "+r", "/home/pi/karte/metar.py"])
+        subprocess.call(["sudo", "chmod", "+r", "/home/pi/karte/pixelsoff.py"])
+        subprocess.call(["sudo", "chmod", "+r", "/home/pi/config.yaml"])
 
         # zeiten in crontab schreiben
         with open("/home/pi/karte/crontab" if PI else "karte/crontab", "w+") as f:
