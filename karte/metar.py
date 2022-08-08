@@ -47,6 +47,7 @@ pixels = neopixel.NeoPixel(LED_PIN, LED_COUNT, brightness=LED_BRIGHTNESS, pixel_
 
 # Read the airports file to retrieve list of airports and use as order for LEDs
 airports = [x.strip() for x in config["flugplaetze"]]
+print(airports)
 
 url = "https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&hoursBeforeNow=5&mostRecentForEachStation=true&stationString=" + ",".join(
     [item for item in airports if item != "NULL"])
