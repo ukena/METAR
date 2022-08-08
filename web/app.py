@@ -26,8 +26,8 @@ def index():
                 config["zeiten"][key] = data
                 # zeiten in crontab schreiben
                 with open("/home/pi/karte/crontab" if PI else "karte/crontab", "w+") as f:
-                    cron_an = f"*/5 {config['zeiten']['an']}-{int(config['zeiten']['aus']) - 1} * * *  /home/pi/metar/karte/refresh.sh"
-                    cron_aus = f"*/5 {config['zeiten']['aus']} * * *     /home/pi/metar/karte/lightsoff.sh"
+                    cron_an = f"*/5 {config['zeiten']['an']}-{int(config['zeiten']['aus']) - 1} * * *  /home/pi/karte/refresh.sh"
+                    cron_aus = f"*/5 {config['zeiten']['aus']} * * *     /home/pi/karte/lightsoff.sh"
                     f.write(cron_an + "\n")
                     f.write(cron_aus + "\n")
                 subprocess.call(["/usr/bin/crontab", "/home/pi/karte/crontab", "-"])
