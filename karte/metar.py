@@ -10,7 +10,7 @@ import datetime
 def hex_to_grb(hex_color):
     hex_color = hex_color.replace("#", "")
     rgb = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
-    return rgb[1], rgb[0], rgb[2]
+    return rgb
 
 config = yaml.safe_load(open("/home/pi/config.yaml"))
 
@@ -47,11 +47,10 @@ pixels = neopixel.NeoPixel(LED_PIN, LED_COUNT, brightness=LED_BRIGHTNESS, pixel_
 
 # Read the airports file to retrieve list of airports and use as order for LEDs
 airports = [x.strip() for x in config["flugplaetze"]]
-print(airports)
 
 url = "https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&hoursBeforeNow=5&mostRecentForEachStation=true&stationString=" + ",".join(
     [item for item in airports if item != "NULL"])
-
+print(url)
 req = urllib.request.Request(url, headers={
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36 Edg/86.0.622.69'})
 content = urllib.request.urlopen(req).read()
