@@ -4,7 +4,7 @@ import yaml
 
 app = Flask(__name__)
 
-PI = False
+PI = True
 
 @app.route("/", methods=["GET", "POST"])
 def index():
