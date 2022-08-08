@@ -41,6 +41,7 @@ def index():
             cron_aus = f"*/5 {config['zeiten']['aus']} * * *     /home/pi/metar/karte/lightsoff.sh"
             f.write(cron_an + "\n")
             f.write(cron_aus + "\n")
+            subprocess.call(["crontab", "/home/pi/karte/crontab", "-"])
 
         # neue WLAN Einstellungen in wpa_supplicant.conf schreiben
         if PI:
