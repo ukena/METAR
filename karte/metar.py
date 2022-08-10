@@ -9,8 +9,8 @@ import datetime
 
 def hex_to_grb(hex_color):
     hex_color = hex_color.replace("#", "")
-    rgb = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
-    return rgb
+    grb = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+    return grb
 
 config = yaml.safe_load(open("/home/pi/config.yaml"))
 
@@ -40,8 +40,6 @@ BLINK_TOTALTIME_SECONDS = 300
 SHOW_LEGEND = True
 OFFSET_LEGEND_BY = 0
 
-print("Running metar.py at " + datetime.datetime.now().strftime('%d/%m/%Y %H:%M'))
-
 # Initialize the LED strip
 pixels = neopixel.NeoPixel(LED_PIN, LED_COUNT, brightness=LED_BRIGHTNESS, pixel_order=LED_ORDER, auto_write=False)
 
@@ -50,7 +48,7 @@ airports = [x.strip() for x in config["flugplaetze"]]
 
 url = "https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&hoursBeforeNow=5&mostRecentForEachStation=true&stationString=" + ",".join(
     [item for item in airports if item != "NULL"])
-print(url)
+
 req = urllib.request.Request(url, headers={
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36 Edg/86.0.622.69'})
 content = urllib.request.urlopen(req).read()
@@ -105,15 +103,6 @@ for metar in root.iter('METAR'):
         rawText = metar.find('raw_text').text
         lightning = False if ((rawText.find('LTG', 4) == -1 and rawText.find('TS', 4) == -1) or rawText.find('TSNO',
                                                                                                              4) != -1) else True
-    print(stationId + ":"
-          + flightCategory + ":"
-          + str(windDir) + "@" + str(windSpeed) + ("G" + str(windGustSpeed) if windGust else "") + ":"
-          + str(vis) + "SM:"
-          + obs + ":"
-          + str(tempC) + "/"
-          + str(dewpointC) + ":"
-          + str(altimHg) + ":"
-          + str(lightning))
     conditionDict[stationId] = {"flightCategory": flightCategory, "windDir": windDir, "windSpeed": windSpeed,
                                 "windGustSpeed": windGustSpeed, "windGust": windGust, "vis": vis, "obs": obs,
                                 "tempC": tempC, "dewpointC": dewpointC, "altimHg": altimHg, "lightning": lightning,

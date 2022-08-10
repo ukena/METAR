@@ -22,9 +22,10 @@ def load_settings(channel):
         for line in out_file:
             f.write(line)
 
-    subprocess.call(["reboot"])
+    subprocess.call(["/usr/bin/python3", "/home/pi/karte/pixelsoff.py"])
+    subprocess.call(["sudo", "reboot"])
 
-GPIO.add_event_detect(23, GPIO.FALLING, callback=load_settings, bouncetime=2000)
+GPIO.add_event_detect(23, GPIO.FALLING, callback=load_settings, bouncetime=500)
 
 while 1:
-    time.sleep(1)
+    time.sleep(0.1)
