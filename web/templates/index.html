@@ -62,11 +62,11 @@
                         <div class="tab-pane fade" id="wind" role="tabpanel" aria-labelledby="wind">
                             <div class="form-group col-12 mt-2">
                                 <label for="normal">Wind Blinken ab (kt)</label>
-                                <input type="number" min="0" class="form-control" id="normal" name="normal" value="{{ config.wind.normal }}">
+                                <input type="number" min="1" class="form-control" id="normal" name="normal" value="{{ config.wind.normal }}">
                             </div>
                             <div class="form-group col-12 mt-2">
                                 <label for="hoch">Hoher Wind Blinken ab (kt)</label>
-                                <input type="number" min="0" class="form-control" id="hoch" name="hoch" value="{{ config.wind.hoch }}">
+                                <input type="number" min="2" class="form-control" id="hoch" name="hoch" value="{{ config.wind.hoch }}">
                             </div>
                             <div class="form-group col-12 mt-2">
                                 <label for="frequenz">Frequenz des Blinkens (sek)</label>

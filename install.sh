@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
-# update
-sudo apt update
-sudo apt upgrade -y
-# git und pip installieren
+# pip installieren
 sudo apt install python3-pip -y
 # pip requirements installieren
 pip install -r /home/pi/requirements.txt
