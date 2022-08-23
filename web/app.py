@@ -35,8 +35,8 @@ def index():
                 config["flugplaetze"] = [i.strip() for i in data.split("\r")]
             elif key == "update-branch":
                 if data in ("master", "dev"):
-                    subprocess.call(["git", "fetch", "--all"])
-                    subprocess.call(["git", "reset", "--hard", f"origin/{data}"])
+                    subprocess.Popen(["git", "fetch", "--all"], cwd="/home/pi")
+                    subprocess.Popen(["git", "reset", "--hard", f"origin/{data}"], cwd="/home/pi")
 
         # neue config parsen
         with open("/home/pi/config.yaml" if PI else "config.yaml", "w") as f:
