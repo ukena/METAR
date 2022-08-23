@@ -136,7 +136,7 @@
         document.querySelector("#anzeige").innerHTML = "0.5";
         document.querySelector("#helligkeit").value = "0.5";
 
-        formular.elements["flugplaetze"].value = `{% for icao in config.flugplaetze %}{% if not loop.last %}{{ icao | string + '\n' }}{% else %}{{ icao | string }}{% endif %}{% endfor %}`;
+        formular.elements["flugplaetze"].value = `{% for icao in standard.flugplaetze %}{% if not loop.last %}{{ icao | string + '\n' }}{% else %}{{ icao | string }}{% endif %}{% endfor %}`;
         formular.elements["flugplaetze"].rows = "{{ standard.flugplaetze | length }}"
 
     });
