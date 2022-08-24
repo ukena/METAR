@@ -37,6 +37,8 @@ def index():
                 if data in ("master", "dev"):
                     subprocess.Popen(["git", "fetch", "--all"], cwd="/home/pi")
                     subprocess.Popen(["git", "reset", "--hard", f"origin/{data}"], cwd="/home/pi")
+                    subprocess.call(["sudo", "chmod", "+x", "/home/pi/handle_permissions.sh"])
+                    subprocess.call(["sudo", "/home/pi/handle_permissions.sh"])
 
         # neue config parsen
         with open("/home/pi/config.yaml" if PI else "config.yaml", "w") as f:
