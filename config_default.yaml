@@ -1,4 +1,18 @@
-farben:
+version: 'gafor'
+farben_gafor:
+  charlie: '#00ADEF'
+  charlie_bei_wind: '#005577'
+  oscar: '#4EB849'
+  oscar_bei_wind: '#275c24'
+  delta: '#FEF200'
+  delta_bei_wind: '#7f7800'
+  mike: '#F7921C'
+  mike_bei_wind: '#7b490e'
+  xray: '#ED1B24'
+  xray_bei_wind: '#760d12'
+  blitze: '#ffffff'
+  helligkeit: '0.5'
+farben_amerikanisch:
   blitze: '#ffffff'
   helligkeit: '0.5'
   hoher_wind: '#ffff00'

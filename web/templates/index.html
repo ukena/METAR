@@ -22,6 +22,7 @@
                 <nav>
                     <div class="nav nav-tabs" role="tablist">
                         <button class="nav-link active" id="wlan-tab" data-bs-toggle="tab" data-bs-target="#wlan" type="button" role="tab" aria-controls="wlan" aria-selected="true">WLAN</button>
+                        <button class="nav-link" id="version-tab" data-bs-toggle="tab" data-bs-target="#version" type="button" role="tab" aria-controls="version" aria-selected="false">Version</button>
                         <button class="nav-link" id="farben-tab" data-bs-toggle="tab" data-bs-target="#farben" type="button" role="tab" aria-controls="farben" aria-selected="false">Farben</button>
                         <button class="nav-link" id="wind-tab" data-bs-toggle="tab" data-bs-target="#wind" type="button" role="tab" aria-controls="wind" aria-selected="false">Wind</button>
                         <button class="nav-link" id="zeiten-tab" data-bs-toggle="tab" data-bs-target="#zeiten" type="button" role="tab" aria-controls="zeiten" aria-selected="false">Zeiten</button>
@@ -44,17 +45,30 @@
                                 <input required type="password" class="form-control" id="passwort" name="passwort" value="{{ config.wlan.passwort }}">
                             </div>
                         </div>
+                        <div class="tab-pane fade" id="version" role="tabpanel" aria-labelledby="version">
+                            <div class="alert alert-danger mt-3" role="alert">
+                              Hier kannst Du einstellen, ob Du die GAFOR oder die amerikanische Version der Karte hast. Dadurch kannst Du Dich auch jederzeit für die andere Version entscheiden. Die Auswahl hier hat Auswirkungen auf die verfügbaren Einstellungen im Tab Farben und Wind.
+                            </div>
+                            <div class="form-group col-12 mt-2">
+                                <input type="radio" id="gafor" name="version" value="gafor" checked onchange="handleVersion(this)">
+                                <label for="gafor">GAFOR</label>
+                            </div>
+                            <div class="form-group col-12 mt-2">
+                                <input type="radio" id="amerikanisch" name="version" value="amerikanisch" onchange="handleVersion(this)">
+                                <label for="amerikanisch">Amerikanisch</label>
+                            </div>
+                        </div>
                         <div class="tab-pane fade" id="farben" role="tabpanel" aria-labelledby="farben">
                             <div class="form-row">
-                                {% for ind in ("vfr", "vfr_bei_wind", "mvfr", "mvfr_bei_wind", "ifr", "ifr_bei_wind", "lifr", "lifr_bei_wind", "blitze", "hoher_wind") %}
+                                {% for ind in ("charlie", "charlie_bei_wind", "oscar", "oscar_bei_wind", "delta", "delta_bei_wind", "mike", "mike_bei_wind", "xray", "xray_bei_wind", "blitze") %}
                                     <div class="form-group col-6 mt-2 p-2">
                                         <label for="{{ ind }}">{{ ind.replace('_', ' ') }}</label>
-                                        <input type="color" name="{{ ind }}" id="{{ ind }}" value="{{ config.farben[ind] }}" class="form-control input-lg">
+                                        <input type="color" name="{{ ind }}" id="{{ ind }}" value="{{ config.farben_gafor[ind] }}" class="form-control input-lg">
                                     </div>
                                 {% endfor %}
                                 <div class="form-group col-12 mt-2 p-2">
                                     <label for="helligkeit">Helligkeit</label>
-                                    <input autocomplete="off" type="range" min="0.1" max="1" name="helligkeit" id="helligkeit" value="{{ config.farben.helligkeit }}" step="0.1" class="form-control input-lg">
+                                    <input autocomplete="off" type="range" min="0.1" max="1" name="helligkeit" id="helligkeit" value="{{ config.farben_gafor.helligkeit }}" step="0.1" class="form-control input-lg">
                                     <p class="text-center" id="anzeige"></p>
                                 </div>
                             </div>
@@ -65,8 +79,8 @@
                                 <input type="number" min="1" class="form-control" id="normal" name="normal" value="{{ config.wind.normal }}">
                             </div>
                             <div class="form-group col-12 mt-2">
-                                <label for="hoch">Hoher Wind Blinken ab (kt)</label>
-                                <input type="number" min="2" class="form-control" id="hoch" name="hoch" value="{{ config.wind.hoch }}">
+                                <label id="hoch-label" for="hoch" style="display: none">Hoher Wind Blinken ab (kt)</label>
+                                <input type="number" min="2" class="form-control" id="hoch" name="hoch" value="{{ config.wind.hoch }}" style="display: none">
                             </div>
                             <div class="form-group col-12 mt-2">
                                 <label for="frequenz">Frequenz des Blinkens (sek)</label>
@@ -105,9 +119,11 @@
                             </div>
                         </div>
                     </div>
-                    <button type="reset" class="btn btn-primary mt-4">Einstellungen zurücksetzen</button>
-                    <button type="button" class="btn btn-secondary mt-4" id="standard">Einstellungen auf Standardwerte zurücksetzen</button>
-                    <button type="submit" class="btn btn-success mt-4">Speichern und Neustart</button>
+                    <div>
+                        <button type="reset" class="btn btn-primary mt-4">Einstellungen zurücksetzen</button>
+                        <button type="button" class="btn btn-secondary mt-4" id="standard">Einstellungen auf Standardwerte zurücksetzen</button>
+                        <button type="submit" class="btn btn-success mt-4">Speichern und Neustart</button>
+                    </div>
                 </form>
             </div>
             {% endif %}
@@ -120,12 +136,14 @@
     const button = document.querySelector("#standard");
     let formular = document.querySelector("#einstellungen")
     button.addEventListener("click", function () {
-        {% for ind in ("vfr", "vfr_bei_wind", "mvfr", "mvfr_bei_wind", "ifr", "ifr_bei_wind", "lifr", "lifr_bei_wind", "blitze", "hoher_wind") %}
-        formular.elements["{{ ind }}"].value = "{{ standard.farben[ind] }}";
+
+        {% for ind in ("charlie", "charlie_bei_wind", "oscar", "oscar_bei_wind", "delta", "delta_bei_wind", "mike", "mike_bei_wind", "xray", "xray_bei_wind", "blitze") %}
+        formular.elements["{{ ind }}"].value = "{{ standard.farben_gafor[ind] }}";
         {% endfor %}
+
         formular.elements["normal"].value = "{{ standard.wind.normal }}";
 
-        formular.elements["hoch"].value = "{{ standard.wind.hoch }}";
+        {#formular.elements["hoch"].value = "{{ standard.wind.hoch }}";#}
 
         formular.elements["frequenz"].value = "{{ standard.wind.frequenz }}";
 
@@ -142,19 +160,67 @@
     });
 </script>
 <script>
-    const slider = document.querySelector("#helligkeit");
-    const output = document.querySelector("#anzeige");
-    document.addEventListener("DOMContentLoaded", function() {
-      output.innerHTML = slider.value;
-    });
+    function handleSlider() {
+        const slider = document.querySelector("#helligkeit");
+        const output = document.querySelector("#anzeige");
+        document.addEventListener("DOMContentLoaded", function() {
+          output.innerHTML = slider.value;
+        });
 
-    document.addEventListener("reset", function() {
-      output.innerHTML = "0.5";
-    });
+        document.addEventListener("reset", function() {
+          output.innerHTML = "0.5";
+        });
 
-    slider.addEventListener("input", function () {
-        output.innerHTML = this.value;
-    });
+        slider.addEventListener("input", function () {
+            output.innerHTML = this.value;
+        });
+    }
+    handleSlider();
 </script>
 <script src="{{ url_for('static', filename='js/bootstrap.bundle.js') }}"></script>
+<script>
+
+    function handleVersion(e) {
+        var farbenContent = document.getElementById("farben");
+        var hoherWind = document.getElementById("hoch");
+        var hoherWindLabel = document.getElementById("hoch-label");
+
+        if (e.value === "gafor") {
+            farbenContent.innerHTML = `<div class="form-row">
+                                {% for ind in ("charlie", "charlie_bei_wind", "oscar", "oscar_bei_wind", "delta", "delta_bei_wind", "mike", "mike_bei_wind", "xray", "xray_bei_wind", "blitze") %}
+                                    <div class="form-group col-6 mt-2 p-2">
+                                        <label for="{{ ind }}">{{ ind.replace('_', ' ') }}</label>
+                                        <input type="color" name="{{ ind }}" id="{{ ind }}" value="{{ config.farben_gafor[ind] }}" class="form-control input-lg">
+                                    </div>
+                                {% endfor %}
+                                <div class="form-group col-12 mt-2 p-2">
+                                    <label for="helligkeit">Helligkeit</label>
+                                    <input autocomplete="off" type="range" min="0.1" max="1" name="helligkeit" id="helligkeit" value="{{ config.farben_gafor.helligkeit }}" step="0.1" class="form-control input-lg">
+                                    <p class="text-center" id="anzeige"></p>
+                                </div>
+                            </div>`;
+            hoherWind.style.display = "none";
+            hoherWindLabel.style.display = "none";
+
+        } else if (e.value === "amerikanisch") {
+            farbenContent.innerHTML = `<div class="form-row">
+                        {% for ind in ("vfr", "vfr_bei_wind", "mvfr", "mvfr_bei_wind", "ifr", "ifr_bei_wind", "lifr", "lifr_bei_wind", "blitze", "hoher_wind") %}
+                            <div class="form-group col-6 mt-2 p-2">
+                                <label for="{{ ind }}">{{ ind.replace('_', ' ') }}</label>
+                                <input type="color" name="{{ ind }}" id="{{ ind }}" value="{{ config.farben_amerikanisch[ind] }}" class="form-control input-lg">
+                            </div>
+                        {% endfor %}
+                        <div class="form-group col-12 mt-2 p-2">
+                            <label for="helligkeit">Helligkeit</label>
+                            <input autocomplete="off" type="range" min="0.1" max="1" name="helligkeit" id="helligkeit" value="{{ config.farben_amerikanisch.helligkeit }}" step="0.1" class="form-control input-lg">
+                            <p class="text-center" id="anzeige"></p>
+                        </div>
+                    </div>`;
+            hoherWind.style.display = "initial";
+            hoherWindLabel.style.display = "initial";
+        }
+        handleSlider();
+    }
+
+</script>
 </html>

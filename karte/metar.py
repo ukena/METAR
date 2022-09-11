@@ -14,22 +14,39 @@ def hex_to_grb(hex_color):
 
 config = yaml.safe_load(open("/home/pi/config.yaml"))
 
+# version kann "gafor" oder "amerikanisch" sein
+version = config["version"]
+
 LED_COUNT = 100
 LED_PIN = board.D18
-LED_BRIGHTNESS = float(config["farben"]["helligkeit"])
+LED_BRIGHTNESS = float(config["farben_amerikanisch"]["helligkeit"]) if version == "amerikanisch" else float(config["farben_gafor"]["helligkeit"])
 LED_ORDER = neopixel.GRB
-
-COLOR_VFR = hex_to_grb(config["farben"]["vfr"])
-COLOR_VFR_FADE = hex_to_grb(config["farben"]["vfr_bei_wind"])
-COLOR_MVFR = hex_to_grb(config["farben"]["mvfr"])
-COLOR_MVFR_FADE = hex_to_grb(config["farben"]["mvfr_bei_wind"])
-COLOR_IFR = hex_to_grb(config["farben"]["ifr"])
-COLOR_IFR_FADE = hex_to_grb(config["farben"]["ifr_bei_wind"])
-COLOR_LIFR = hex_to_grb(config["farben"]["lifr"])
-COLOR_LIFR_FADE = hex_to_grb(config["farben"]["lifr_bei_wind"])
-COLOR_LIGHTNING = hex_to_grb(config["farben"]["blitze"])
-COLOR_HIGH_WINDS = hex_to_grb(config["farben"]["hoher_wind"])
 COLOR_CLEAR = (0, 0, 0)
+
+# Farben Amerikanisch
+COLOR_VFR = hex_to_grb(config["farben_amerikanisch"]["vfr"])
+COLOR_VFR_FADE = hex_to_grb(config["farben_amerikanisch"]["vfr_bei_wind"])
+COLOR_MVFR = hex_to_grb(config["farben_amerikanisch"]["mvfr"])
+COLOR_MVFR_FADE = hex_to_grb(config["farben_amerikanisch"]["mvfr_bei_wind"])
+COLOR_IFR = hex_to_grb(config["farben_amerikanisch"]["ifr"])
+COLOR_IFR_FADE = hex_to_grb(config["farben_amerikanisch"]["ifr_bei_wind"])
+COLOR_LIFR = hex_to_grb(config["farben_amerikanisch"]["lifr"])
+COLOR_LIFR_FADE = hex_to_grb(config["farben_amerikanisch"]["lifr_bei_wind"])
+COLOR_LIGHTNING = hex_to_grb(config["farben_amerikanisch"]["blitze"])
+COLOR_HIGH_WINDS = hex_to_grb(config["farben_amerikanisch"]["hoher_wind"])
+
+# Farben GAFOR
+COLOR_GAFOR_C = hex_to_grb(config["farben_gafor"]["charlie"])
+COLOR_GAFOR_C_WIND = hex_to_grb(config["farben_gafor"]["charlie_bei_wind"])
+COLOR_GAFOR_O = hex_to_grb(config["farben_gafor"]["oscar"])
+COLOR_GAFOR_O_WIND = hex_to_grb(config["farben_gafor"]["oscar_bei_wind"])
+COLOR_GAFOR_D = hex_to_grb(config["farben_gafor"]["delta"])
+COLOR_GAFOR_D_WIND = hex_to_grb(config["farben_gafor"]["delta_bei_wind"])
+COLOR_GAFOR_M = hex_to_grb(config["farben_gafor"]["mike"])
+COLOR_GAFOR_M_WIND = hex_to_grb(config["farben_gafor"]["mike_bei_wind"])
+COLOR_GAFOR_X = hex_to_grb(config["farben_gafor"]["xray"])
+COLOR_GAFOR_X_WIND = hex_to_grb(config["farben_gafor"]["xray_bei_wind"])
+COLOR_GAFOR_BLITZE = hex_to_grb(config["farben_gafor"]["blitze"])
 
 WIND_BLINK_THRESHOLD = int(config["wind"]["normal"])
 HIGH_WINDS_THRESHOLD = int(config["wind"]["hoch"])
@@ -89,7 +106,8 @@ for metar in root.iter('METAR'):
     if metar.find('dewpoint_c') is not None:
         dewpointC = int(round(float(metar.find('dewpoint_c').text)))
     if metar.find('visibility_statute_mi') is not None:
-        vis = int(round(float(metar.find('visibility_statute_mi').text)))
+        vis = float(metar.find('visibility_statute_mi').text)
+        vis = round(vis / 0.62137119223733, 1)
     if metar.find('altim_in_hg') is not None:
         altimHg = float(round(float(metar.find('altim_in_hg').text), 2))
     if metar.find('wx_string') is not None:
@@ -128,38 +146,59 @@ while looplimit > 0:
 
         if conditions != None:
             windy = True if (windCycle == True and (conditions["windSpeed"] >= WIND_BLINK_THRESHOLD or conditions["windGust"] == True)) else False
-            highWinds = True if (windy and HIGH_WINDS_THRESHOLD != -1 and (
+            highWinds = True if (windy and version != "gafor" and HIGH_WINDS_THRESHOLD != -1 and (
                         conditions["windSpeed"] >= HIGH_WINDS_THRESHOLD or conditions[
                     "windGustSpeed"] >= HIGH_WINDS_THRESHOLD)) else False
-            lightningConditions = True if (windCycle == False and conditions[
-                "lightning"] == True) else False
-            if conditions["flightCategory"] == "VFR":
-                color = COLOR_VFR if not (windy or lightningConditions) else COLOR_LIGHTNING if lightningConditions else COLOR_HIGH_WINDS if highWinds else COLOR_VFR_FADE if windy else COLOR_CLEAR
-            elif conditions["flightCategory"] == "MVFR":
-                color = COLOR_MVFR if not (windy or lightningConditions) else COLOR_LIGHTNING if lightningConditions else COLOR_HIGH_WINDS if highWinds else COLOR_MVFR_FADE if windy else COLOR_CLEAR
-            elif conditions["flightCategory"] == "IFR":
-                color = COLOR_IFR if not (windy or lightningConditions) else COLOR_LIGHTNING if lightningConditions else COLOR_HIGH_WINDS if highWinds else COLOR_IFR_FADE if windy else COLOR_CLEAR
-            elif conditions["flightCategory"] == "LIFR":
-                color = COLOR_LIFR if not (windy or lightningConditions) else COLOR_LIGHTNING if lightningConditions else COLOR_HIGH_WINDS if highWinds else COLOR_LIFR_FADE if windy else COLOR_CLEAR
-            else:
-                color = COLOR_CLEAR
+            lightningConditions = True if (windCycle == False and conditions["lightning"] == True) else False
 
-        print(
-            "Setting LED " + str(i) + " for " + airportcode + " to " + ("lightning " if lightningConditions else "") + (
-                "very " if highWinds else "") + ("windy " if windy else "") + (
-                conditions["flightCategory"] if conditions != None else "None") + " " + str(color))
+            # gafor version
+            if version == "gafor":
+                if conditions["vis"] < 1.5 or any(sc["cloudBaseFt"] < 500 and sc["cover"] in ("BKN", "OVC") for sc in conditions["skyConditions"]):
+                    color = COLOR_GAFOR_X
+                elif (5 > conditions["vis"] >= 1.5) or any(1000 > sc["cloudBaseFt"] >= 500 and sc["cover"] in ("BKN", "OVC") for sc in conditions["skyConditions"]):
+                    color = COLOR_GAFOR_M
+                elif (8 > conditions["vis"] >= 5) or any(2000 > sc["cloudBaseFt"] >= 1000 and sc["cover"] in ("BKN", "OVC") for sc in conditions["skyConditions"]):
+                    color = COLOR_GAFOR_D
+                elif (10 > conditions["vis"] >= 8) or any(5000 > sc["cloudBaseFt"] >= 2000 and sc["cover"] in ("BKN", "OVC") for sc in conditions["skyConditions"]):
+                    color = COLOR_GAFOR_O
+                elif (conditions["vis"] >= 10) or any(sc["cloudBaseFt"] >= 5000 and sc["cover"] in ("BKN", "OVC") for sc in conditions["skyConditions"]):
+                    color = COLOR_GAFOR_C
+
+            # amerikanische version
+            elif version == "amerikanisch":
+                if conditions["flightCategory"] == "VFR":
+                    color = COLOR_VFR if not (windy or lightningConditions) else COLOR_LIGHTNING if lightningConditions else COLOR_HIGH_WINDS if highWinds else COLOR_VFR_FADE if windy else COLOR_CLEAR
+                elif conditions["flightCategory"] == "MVFR":
+                    color = COLOR_MVFR if not (windy or lightningConditions) else COLOR_LIGHTNING if lightningConditions else COLOR_HIGH_WINDS if highWinds else COLOR_MVFR_FADE if windy else COLOR_CLEAR
+                elif conditions["flightCategory"] == "IFR":
+                    color = COLOR_IFR if not (windy or lightningConditions) else COLOR_LIGHTNING if lightningConditions else COLOR_HIGH_WINDS if highWinds else COLOR_IFR_FADE if windy else COLOR_CLEAR
+                elif conditions["flightCategory"] == "LIFR":
+                    color = COLOR_LIFR if not (windy or lightningConditions) else COLOR_LIGHTNING if lightningConditions else COLOR_HIGH_WINDS if highWinds else COLOR_LIFR_FADE if windy else COLOR_CLEAR
+                else:
+                    color = COLOR_CLEAR
+
         pixels[i] = color
         i += 1
 
     if SHOW_LEGEND:
-        pixels[i + OFFSET_LEGEND_BY] = COLOR_VFR
-        pixels[i + OFFSET_LEGEND_BY + 1] = COLOR_MVFR
-        pixels[i + OFFSET_LEGEND_BY + 2] = COLOR_IFR
-        pixels[i + OFFSET_LEGEND_BY + 3] = COLOR_LIFR
-        pixels[i + OFFSET_LEGEND_BY + 4] = COLOR_LIGHTNING if windCycle else COLOR_VFR
-        pixels[i + OFFSET_LEGEND_BY + 5] = COLOR_VFR if not windCycle else COLOR_VFR_FADE
-        if HIGH_WINDS_THRESHOLD != -1:
-            pixels[i + OFFSET_LEGEND_BY + 6] = COLOR_VFR if not windCycle else COLOR_HIGH_WINDS
+        if version == "gafor":
+            pixels[i + OFFSET_LEGEND_BY] = COLOR_GAFOR_C
+            pixels[i + OFFSET_LEGEND_BY + 1] = COLOR_GAFOR_O
+            pixels[i + OFFSET_LEGEND_BY + 2] = COLOR_GAFOR_D
+            pixels[i + OFFSET_LEGEND_BY + 3] = COLOR_GAFOR_M
+            pixels[i + OFFSET_LEGEND_BY + 4] = COLOR_GAFOR_X
+            pixels[i + OFFSET_LEGEND_BY + 4] = COLOR_GAFOR_BLITZE if windCycle else COLOR_GAFOR_C
+            pixels[i + OFFSET_LEGEND_BY + 5] = COLOR_GAFOR_C if not windCycle else COLOR_GAFOR_C_WIND
+
+        elif version == "amerikanisch":
+            pixels[i + OFFSET_LEGEND_BY] = COLOR_VFR
+            pixels[i + OFFSET_LEGEND_BY + 1] = COLOR_MVFR
+            pixels[i + OFFSET_LEGEND_BY + 2] = COLOR_IFR
+            pixels[i + OFFSET_LEGEND_BY + 3] = COLOR_LIFR
+            pixels[i + OFFSET_LEGEND_BY + 4] = COLOR_LIGHTNING if windCycle else COLOR_VFR
+            pixels[i + OFFSET_LEGEND_BY + 5] = COLOR_VFR if not windCycle else COLOR_VFR_FADE
+            if HIGH_WINDS_THRESHOLD != -1:
+                pixels[i + OFFSET_LEGEND_BY + 6] = COLOR_VFR if not windCycle else COLOR_HIGH_WINDS
 
     pixels.show()
 

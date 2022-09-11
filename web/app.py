@@ -4,7 +4,7 @@ import yaml
 
 app = Flask(__name__)
 
-PI = True
+PI = False
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -18,19 +18,25 @@ def index():
         for key, data in request.form.items():
             if key in ("ssid", "passwort"):
                 config["wlan"][key] = data
+            elif key == "version":
+                config["version"] = data
             elif key in ("vfr", "vfr_bei_wind", "mvfr", "mvfr_bei_wind", "ifr", "ifr_bei_wind", "lifr", "lifr_bei_wind", "blitze", "hoher_wind", "helligkeit"):
-                config["farben"][key] = data
+                if request.form.get("version") == "gafor":
+                    config["farben_gafor"][key] = data
+                else:
+                    config["farben_amerikanisch"][key] = data
             elif key in ("normal", "hoch", "frequenz"):
                 config["wind"][key] = data
             elif key in ("an", "aus"):
                 config["zeiten"][key] = data
                 # zeiten in crontab schreiben
-                with open("/home/pi/karte/crontab" if PI else "karte/crontab", "w+") as f:
-                    cron_an = f"*/5 {config['zeiten']['an']}-{int(config['zeiten']['aus']) - 1} * * *  /home/pi/karte/refresh.sh"
-                    cron_aus = f"*/5 {config['zeiten']['aus']} * * *     /home/pi/karte/lightsoff.sh"
-                    f.write(cron_an + "\n")
-                    f.write(cron_aus + "\n")
-                subprocess.call(["sudo", "crontab", "/home/pi/karte/crontab", "-"])
+                if PI:
+                    with open("/home/pi/karte/crontab", "w+") as f:
+                        cron_an = f"*/5 {config['zeiten']['an']}-{int(config['zeiten']['aus']) - 1} * * *  /home/pi/karte/refresh.sh"
+                        cron_aus = f"*/5 {config['zeiten']['aus']} * * *     /home/pi/karte/lightsoff.sh"
+                        f.write(cron_an + "\n")
+                        f.write(cron_aus + "\n")
+                    subprocess.call(["sudo", "crontab", "/home/pi/karte/crontab", "-"])
             elif key == "flugplaetze":
                 config["flugplaetze"] = [i.strip() for i in data.split("\r")]
             elif key == "update-branch":

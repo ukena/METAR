@@ -1,6 +1,6 @@
-farben:
+farben_amerikanisch:
   blitze: '#ffffff'
-  helligkeit: '0.5'
+  helligkeit: '0.7'
   hoher_wind: '#ffff00'
   ifr: '#ff0000'
   ifr_bei_wind: '#7d0000'
@@ -10,6 +10,19 @@ farben:
   mvfr_bei_wind: '#00007d'
   vfr: '#00ff00'
   vfr_bei_wind: '#007d00'
+farben_gafor:
+  blitze: '#ffffff'
+  charlie: '#00ADEF'
+  charlie_bei_wind: '#005577'
+  delta: '#FEF200'
+  delta_bei_wind: '#7f7800'
+  helligkeit: '0.3'
+  mike: '#F7921C'
+  mike_bei_wind: '#7b490e'
+  oscar: '#4EB849'
+  oscar_bei_wind: '#275c24'
+  xray: '#ED1B24'
+  xray_bei_wind: '#760d12'
 flugplaetze:
 - EDNY
 - LSZH
@@ -93,12 +106,13 @@ flugplaetze:
 - ETSL
 - EDDM
 - LOWS
+version: amerikanisch
 wind:
   frequenz: '1'
   hoch: '25'
   normal: '15'
 wlan:
-  passwort: '41466851524275405594'
+  passwort: vqjaynua
   ssid: FRITZ!Box 7590 TN Kellervorraum
 zeiten:
   an: '8'

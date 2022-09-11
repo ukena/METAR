@@ -37,3 +37,7 @@ input[type="color" i] {
     color: darkviolet;
     font-weight: 500;
 }
+
+.form-row {
+    display: inline-block !important;
+}
