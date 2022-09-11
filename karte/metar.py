@@ -154,15 +154,17 @@ while looplimit > 0:
             # gafor version
             if version == "gafor":
                 if conditions["vis"] < 1.5 or any(sc["cloudBaseFt"] < 500 and sc["cover"] in ("BKN", "OVC") for sc in conditions["skyConditions"]):
-                    color = COLOR_GAFOR_X
+                    color = COLOR_GAFOR_X if not (windy or lightningConditions) else COLOR_GAFOR_BLITZE if lightningConditions else COLOR_GAFOR_X_WIND if windy else COLOR_CLEAR
                 elif (5 > conditions["vis"] >= 1.5) or any(1000 > sc["cloudBaseFt"] >= 500 and sc["cover"] in ("BKN", "OVC") for sc in conditions["skyConditions"]):
-                    color = COLOR_GAFOR_M
+                    color = COLOR_GAFOR_M if not (windy or lightningConditions) else COLOR_GAFOR_BLITZE if lightningConditions else COLOR_GAFOR_M_WIND if windy else COLOR_CLEAR
                 elif (8 > conditions["vis"] >= 5) or any(2000 > sc["cloudBaseFt"] >= 1000 and sc["cover"] in ("BKN", "OVC") for sc in conditions["skyConditions"]):
-                    color = COLOR_GAFOR_D
+                    color = COLOR_GAFOR_D if not (windy or lightningConditions) else COLOR_GAFOR_BLITZE if lightningConditions else COLOR_GAFOR_D_WIND if windy else COLOR_CLEAR
                 elif (10 > conditions["vis"] >= 8) or any(5000 > sc["cloudBaseFt"] >= 2000 and sc["cover"] in ("BKN", "OVC") for sc in conditions["skyConditions"]):
-                    color = COLOR_GAFOR_O
+                    color = COLOR_GAFOR_O if not (windy or lightningConditions) else COLOR_GAFOR_BLITZE if lightningConditions else COLOR_GAFOR_O_WIND if windy else COLOR_CLEAR
                 elif (conditions["vis"] >= 10) or any(sc["cloudBaseFt"] >= 5000 and sc["cover"] in ("BKN", "OVC") for sc in conditions["skyConditions"]):
-                    color = COLOR_GAFOR_C
+                    color = COLOR_GAFOR_C if not (windy or lightningConditions) else COLOR_GAFOR_BLITZE if lightningConditions else COLOR_GAFOR_C_WIND if windy else COLOR_CLEAR
+                else:
+                    color = COLOR_CLEAR
 
             # amerikanische version
             elif version == "amerikanisch":
