@@ -2,7 +2,7 @@
 # pip installieren
 sudo apt install python3-pip -y
 # pip requirements installieren
-suod pip3 install -r /home/pi/requirements.txt
+sudo pip3 install -r /home/pi/requirements.txt
 sudo python3 -m pip install --force-reinstall adafruit-blinka
 # berechtigungen vergeben
 sudo chmod +x /home/pi/handle_permissions.sh
