@@ -196,8 +196,7 @@ while looplimit > 0:
         pixels[i + 3] = COLOR_LIFR
         pixels[i + 2] = COLOR_LIGHTNING if windCycle else COLOR_VFR
         pixels[i + 1] = COLOR_VFR if not windCycle else COLOR_VFR_FADE
-        if HIGH_WINDS_THRESHOLD != -1:
-            pixels[i] = COLOR_VFR if not windCycle else COLOR_HIGH_WINDS
+        pixels[i] = COLOR_VFR if not windCycle else COLOR_HIGH_WINDS
 
     pixels.show()
 
