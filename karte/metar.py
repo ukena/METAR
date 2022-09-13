@@ -54,9 +54,6 @@ BLINK_SPEED = float(config["wind"]["frequenz"])
 
 BLINK_TOTALTIME_SECONDS = 300
 
-SHOW_LEGEND = True
-OFFSET_LEGEND_BY = 0
-
 # Initialize the LED strip
 pixels = neopixel.NeoPixel(LED_PIN, LED_COUNT, brightness=LED_BRIGHTNESS, pixel_order=LED_ORDER, auto_write=False)
 
@@ -182,25 +179,25 @@ while looplimit > 0:
         pixels[i] = color
         i += 1
 
-    if SHOW_LEGEND:
-        if version == "gafor":
-            pixels[i + OFFSET_LEGEND_BY] = COLOR_GAFOR_C
-            pixels[i + OFFSET_LEGEND_BY + 1] = COLOR_GAFOR_O
-            pixels[i + OFFSET_LEGEND_BY + 2] = COLOR_GAFOR_D
-            pixels[i + OFFSET_LEGEND_BY + 3] = COLOR_GAFOR_M
-            pixels[i + OFFSET_LEGEND_BY + 4] = COLOR_GAFOR_X
-            pixels[i + OFFSET_LEGEND_BY + 4] = COLOR_GAFOR_BLITZE if windCycle else COLOR_GAFOR_C
-            pixels[i + OFFSET_LEGEND_BY + 5] = COLOR_GAFOR_C if not windCycle else COLOR_GAFOR_C_WIND
-
-        elif version == "amerikanisch":
-            pixels[i + OFFSET_LEGEND_BY] = COLOR_VFR
-            pixels[i + OFFSET_LEGEND_BY + 1] = COLOR_MVFR
-            pixels[i + OFFSET_LEGEND_BY + 2] = COLOR_IFR
-            pixels[i + OFFSET_LEGEND_BY + 3] = COLOR_LIFR
-            pixels[i + OFFSET_LEGEND_BY + 4] = COLOR_LIGHTNING if windCycle else COLOR_VFR
-            pixels[i + OFFSET_LEGEND_BY + 5] = COLOR_VFR if not windCycle else COLOR_VFR_FADE
-            if HIGH_WINDS_THRESHOLD != -1:
-                pixels[i + OFFSET_LEGEND_BY + 6] = COLOR_VFR if not windCycle else COLOR_HIGH_WINDS
+    # legende gafor
+    if version == "gafor":
+        pixels[i + 6] = COLOR_GAFOR_C
+        pixels[i + 5] = COLOR_GAFOR_O
+        pixels[i + 4] = COLOR_GAFOR_D
+        pixels[i + 3] = COLOR_GAFOR_M
+        pixels[i + 2] = COLOR_GAFOR_X
+        pixels[i + 1] = COLOR_GAFOR_BLITZE if windCycle else COLOR_GAFOR_C
+        pixels[i] = COLOR_GAFOR_C if not windCycle else COLOR_GAFOR_C_WIND
+    # legende amerikanisch
+    elif version == "amerikanisch":
+        pixels[i + 6] = COLOR_VFR
+        pixels[i + 5] = COLOR_MVFR
+        pixels[i + 4] = COLOR_IFR
+        pixels[i + 3] = COLOR_LIFR
+        pixels[i + 2] = COLOR_LIGHTNING if windCycle else COLOR_VFR
+        pixels[i + 1] = COLOR_VFR if not windCycle else COLOR_VFR_FADE
+        if HIGH_WINDS_THRESHOLD != -1:
+            pixels[i] = COLOR_VFR if not windCycle else COLOR_HIGH_WINDS
 
     pixels.show()
 
