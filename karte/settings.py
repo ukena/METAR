@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 import subprocess
 import time
+import datetime
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -22,8 +23,8 @@ def load_settings(channel):
         for line in out_file:
             f.write(line)
 
-    with open("/home/pi/karte/settings-log.txt", "a") as f:
-        f.write("Settings loaded at: " + time.strftime("%Y-%m-%d %H:%M:%S"))
+    with open("/home/pi/karte/settings-log.txt", "a") as g:
+        g.write(f"Settings loaded at {datetime.datetime.now()}")
 
     subprocess.call(["/usr/bin/python3", "/home/pi/karte/pixelsoff.py"])
     subprocess.call(["sudo", "reboot"])
