@@ -7,7 +7,8 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 def load_settings(channel):
-    tm_check = time.time() + .5
+    GPIO.remove_event_detect(channel)
+    tm_check = time.time() + 1
     while time.time() < tm_check:
         if GPIO.input(channel) == 0:
             return
