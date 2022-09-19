@@ -16,7 +16,7 @@ farben_gafor:
   charlie_bei_wind: '#001c80'
   delta: '#ffff00'
   delta_bei_wind: '#808000'
-  helligkeit: '1'
+  helligkeit: '0.5'
   mike: '#fda600'
   mike_bei_wind: '#7e5400'
   oscar: '#32ae00'
