@@ -23,7 +23,7 @@ def load_settings(channel):
         for line in out_file:
             f.write(line)
 
-    with open("/home/pi/karte/settings-log.txt", "a") as g:
+    with open("/home/pi/karte/settings-log-python.txt", "a") as g:
         g.write(f"Settings loaded at {datetime.datetime.now()}")
 
     subprocess.call(["/usr/bin/python3", "/home/pi/karte/pixelsoff.py"])
