@@ -29,7 +29,7 @@ def load_settings(channel):
     subprocess.call(["/usr/bin/python3", "/home/pi/karte/pixelsoff.py"])
     subprocess.call(["sudo", "reboot"])
 
-GPIO.add_event_detect(23, GPIO.FALLING, callback=load_settings, bouncetime=500)
+GPIO.add_event_detect(23, GPIO.FALLING, callback=load_settings, bouncetime=2000)
 
 while 1:
     time.sleep(0.1)
