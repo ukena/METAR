@@ -17,12 +17,12 @@ farben_gafor:
   delta: '#FEF200'
   delta_bei_wind: '#7f7800'
   helligkeit: '1'
-  mike: '#F7921C'
-  mike_bei_wind: '#7b490e'
-  oscar: '#4EB849'
-  oscar_bei_wind: '#275c24'
-  xray: '#ED1B24'
-  xray_bei_wind: '#760d12'
+  mike: '#fda600'
+  mike_bei_wind: '#7e5400'
+  oscar: '#32ae00'
+  oscar_bei_wind: '#195700'
+  xray: '#c90000'
+  xray_bei_wind: '#640000'
 flugplaetze:
   - "LOXZ"
   - "NULL"
