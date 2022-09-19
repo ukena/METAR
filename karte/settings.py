@@ -22,6 +22,10 @@ def load_settings(channel):
         for line in out_file:
             f.write(line)
 
+    with open("/home/pi/karte/settings-log.txt", "a+") as f:
+        f.write("Settings loaded at: " + time.strftime("%Y-%m-%d %H:%M:%S"))
+        f.close()
+
     subprocess.call(["/usr/bin/python3", "/home/pi/karte/pixelsoff.py"])
     subprocess.call(["sudo", "reboot"])
 

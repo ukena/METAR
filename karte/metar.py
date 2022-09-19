@@ -116,8 +116,7 @@ for metar in root.iter('METAR'):
         skyConditions.append(skyCond)
     if metar.find('raw_text') is not None:
         rawText = metar.find('raw_text').text
-        lightning = False if ((rawText.find('LTG', 4) == -1 and rawText.find('TS', 4) == -1) or rawText.find('TSNO',
-                                                                                                             4) != -1) else True
+        lightning = False if ((rawText.find('LTG', 4) == -1 and rawText.find('TS', 4) == -1) or rawText.find('TSNO', 4) != -1) else True
     conditionDict[stationId] = {"flightCategory": flightCategory, "windDir": windDir, "windSpeed": windSpeed,
                                 "windGustSpeed": windGustSpeed, "windGust": windGust, "vis": vis, "obs": obs,
                                 "tempC": tempC, "dewpointC": dewpointC, "altimHg": altimHg, "lightning": lightning,
