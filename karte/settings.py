@@ -7,6 +7,11 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 def load_settings(channel):
+    tm_check = time.time() + .5
+    while time.time() < tm_check:
+        if GPIO.input(channel) == 0:
+            return
+
     with open("/etc/wpa_supplicant/wpa_supplicant-wlan0.conf", "r") as f:
         in_file = f.readlines()
         f.close()
