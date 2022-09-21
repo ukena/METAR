@@ -1,18 +1,11 @@
-import RPi.GPIO as GPIO
+from gpiozero import Button
 import subprocess
-import time
+from signal import pause
 import datetime
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+button = Button(23, hold_time=3)
 
-def load_settings(channel):
-    GPIO.remove_event_detect(channel)
-    tm_check = time.time() + 1
-    while time.time() < tm_check:
-        if GPIO.input(channel) == 0:
-            return
-
+def load_settings():
     with open("/etc/wpa_supplicant/wpa_supplicant-wlan0.conf", "r") as f:
         in_file = f.readlines()
         f.close()
@@ -21,7 +14,7 @@ def load_settings(channel):
     edited_ssid = False
     for line in in_file:
         if "ssid" in line and not edited_ssid:
-            line = '    ssid=' + '"123456789101112"' + '\n'
+            line = '    ssid=' + '"823568923096753422238476835"' + '\n'
             edited_ssid = True
         out_file.append(line)
 
@@ -35,7 +28,6 @@ def load_settings(channel):
     subprocess.call(["/usr/bin/python3", "/home/pi/karte/pixelsoff.py"])
     subprocess.call(["sudo", "reboot"])
 
-GPIO.add_event_detect(23, GPIO.FALLING, callback=load_settings, bouncetime=2000)
+button.when_held = load_settings
 
-while 1:
-    time.sleep(0.1)
+pause()
