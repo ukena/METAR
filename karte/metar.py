@@ -6,6 +6,9 @@ import board
 import neopixel
 import time
 import datetime
+import logging
+
+logging.basicConfig(filename='debug.log', encoding='utf-8', level=logging.DEBUG)
 
 def hex_to_grb(hex_color):
     hex_color = hex_color.replace("#", "")
@@ -151,14 +154,19 @@ while looplimit > 0:
             if version == "gafor":
                 if conditions["vis"] < 1.5 or any(sc["cloudBaseFt"] < 500 and sc["cover"] in ("BKN", "OVC") for sc in conditions["skyConditions"]):
                     color = COLOR_GAFOR_X if not (windy or lightningConditions) else COLOR_GAFOR_BLITZE if lightningConditions else COLOR_GAFOR_X_WIND if windy else COLOR_CLEAR
+                    logging.debug(f"setting {airportcode} to X due to METAR {conditions}")
                 elif (5 > conditions["vis"] >= 1.5) or any(1000 > sc["cloudBaseFt"] >= 500 and sc["cover"] in ("BKN", "OVC") for sc in conditions["skyConditions"]):
                     color = COLOR_GAFOR_M if not (windy or lightningConditions) else COLOR_GAFOR_BLITZE if lightningConditions else COLOR_GAFOR_M_WIND if windy else COLOR_CLEAR
+                    logging.debug(f"setting {airportcode} to M due to METAR {conditions}")
                 elif (8 > conditions["vis"] >= 5) or any(2000 > sc["cloudBaseFt"] >= 1000 and sc["cover"] in ("BKN", "OVC") for sc in conditions["skyConditions"]):
                     color = COLOR_GAFOR_D if not (windy or lightningConditions) else COLOR_GAFOR_BLITZE if lightningConditions else COLOR_GAFOR_D_WIND if windy else COLOR_CLEAR
+                    logging.debug(f"setting {airportcode} to D due to METAR {conditions}")
                 elif (10 > conditions["vis"] >= 8) or any(5000 > sc["cloudBaseFt"] >= 2000 and sc["cover"] in ("BKN", "OVC") for sc in conditions["skyConditions"]):
                     color = COLOR_GAFOR_O if not (windy or lightningConditions) else COLOR_GAFOR_BLITZE if lightningConditions else COLOR_GAFOR_O_WIND if windy else COLOR_CLEAR
+                    logging.debug(f"setting {airportcode} to O due to METAR {conditions}")
                 elif (conditions["vis"] >= 10) or any(sc["cloudBaseFt"] >= 5000 and sc["cover"] in ("BKN", "OVC") for sc in conditions["skyConditions"]):
                     color = COLOR_GAFOR_C if not (windy or lightningConditions) else COLOR_GAFOR_BLITZE if lightningConditions else COLOR_GAFOR_C_WIND if windy else COLOR_CLEAR
+                    logging.debug(f"setting {airportcode} to C due to METAR {conditions}")
                 else:
                     color = COLOR_CLEAR
 
