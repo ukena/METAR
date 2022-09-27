@@ -1,4 +1,5 @@
 # berechtigungen vergeben
+sudo chmod +x /home/pi/install.sh
 sudo chmod +x /home/pi/install_autoap.sh
 sudo chmod +x /home/pi/karte/refresh.sh
 sudo chmod +x /home/pi/karte/lightsoff.sh

@@ -4,27 +4,32 @@ import yaml
 
 app = Flask(__name__)
 
-PI = True
+# zum debuggen, wenn lokal dann False, in Production True
+PI = False
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    # aktuelle Konfiguration auslesen
     with open("/home/pi/config.yaml" if PI else "config.yaml") as f:
         config = yaml.safe_load(f)
-
+    # Standardeinstellungen auslesen
     with open("/home/pi/config_default.yaml" if PI else "config_default.yaml") as f:
         standard = yaml.safe_load(f)
 
+    # wenn Formular abgeschickt wurde
     if request.method == "POST":
+        # über alle Formularfelder iterieren und die Werte in die aktuelle Konfiguration schreiben
         for key, data in request.form.items():
             if key in ("ssid", "passwort"):
                 config["wlan"][key] = data
             elif key == "version":
                 config["version"] = data
-            elif key in ("vfr", "vfr_bei_wind", "mvfr", "mvfr_bei_wind", "ifr", "ifr_bei_wind", "lifr", "lifr_bei_wind", "blitze", "hoher_wind", "helligkeit"):
-                if request.form.get("version") == "gafor":
-                    config["farben_gafor"][key] = data
-                else:
-                    config["farben_amerikanisch"][key] = data
+            elif key == "helligkeit":
+                config["helligkeit"] = data
+            elif key in ("vfr", "vfr_bei_wind", "mvfr", "mvfr_bei_wind", "ifr", "ifr_bei_wind", "lifr", "lifr_bei_wind", "blitze-amerikanisch", "hoher_wind"):
+                config["farben_amerikanisch"][key] = data
+            elif key in ("charlie", "charlie_bei_wind", "oscar", "oscar_bei_wind", "delta", "delta_bei_wind", "mike", "mike_bei_wind", "xray", "xray_bei_wind", "blitze-gafor"):
+                config["farben_gafor"][key] = data
             elif key in ("normal", "hoch", "frequenz"):
                 config["wind"][key] = data
             elif key in ("an", "aus", "dauerbetrieb"):
@@ -33,8 +38,10 @@ def index():
                 config["flugplaetze"] = [i.strip() for i in data.split("\r")]
             elif key == "update-branch":
                 if data in ("master", "dev"):
+                    # repo auf den Stand des remote branches bringen
                     subprocess.Popen(["git", "fetch", "--all"], cwd="/home/pi")
                     subprocess.Popen(["git", "reset", "--hard", f"origin/{data}"], cwd="/home/pi")
+                    # Permissions updaten, damit cron funktioniert und alle Skripte ausführbar sind
                     subprocess.call(["sudo", "chmod", "+x", "/home/pi/handle_permissions.sh"])
                     subprocess.call(["sudo", "/home/pi/handle_permissions.sh"])
 

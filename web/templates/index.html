@@ -61,24 +61,24 @@
                         <div class="tab-pane fade" id="farben" role="tabpanel" aria-labelledby="farben">
                             <div class="form-row">
                                 <div id="farben-gafor">
-                                    {% for ind in ("charlie", "charlie_bei_wind", "oscar", "oscar_bei_wind", "delta", "delta_bei_wind", "mike", "mike_bei_wind", "xray", "xray_bei_wind", "blitze") %}
+                                    {% for ind in ("charlie", "charlie_bei_wind", "oscar", "oscar_bei_wind", "delta", "delta_bei_wind", "mike", "mike_bei_wind", "xray", "xray_bei_wind", "blitze-gafor") %}
                                         <div class="form-group col-6 mt-2 p-2">
-                                            <label for="{{ ind }}-gafor">{{ ind.replace('_', ' ') }}</label>
-                                            <input type="color" name="{{ ind }}-gafor" id="{{ ind }}-gafor" value="{{ config.farben_gafor[ind] }}" class="form-control input-lg">
+                                            <label for="{{ ind }}">{{ ind.replace('_', ' ').replace('-gafor', '') }}</label>
+                                            <input type="color" name="{{ ind }}" id="{{ ind }}" value="{{ config.farben_gafor[ind] }}" class="form-control input-lg">
                                         </div>
                                     {% endfor %}
                                 </div>
                                 <div id="farben-amerikanisch" style="display: none;">
-                                    {% for ind in ("vfr", "vfr_bei_wind", "mvfr", "mvfr_bei_wind", "ifr", "ifr_bei_wind", "lifr", "lifr_bei_wind", "blitze", "hoher_wind") %}
+                                    {% for ind in ("vfr", "vfr_bei_wind", "mvfr", "mvfr_bei_wind", "ifr", "ifr_bei_wind", "lifr", "lifr_bei_wind", "blitze-amerikanisch", "hoher_wind") %}
                                         <div class="form-group col-6 mt-2 p-2">
-                                            <label for="{{ ind }}-amerikanisch">{{ ind.replace('_', ' ') }}</label>
-                                            <input type="color" name="{{ ind }}-amerikanisch" id="{{ ind }}-amerikanisch" value="{{ config.farben_amerikanisch[ind] }}" class="form-control input-lg">
+                                            <label for="{{ ind }}">{{ ind.replace('_', ' ').replace('-amerikanisch', '') }}</label>
+                                            <input type="color" name="{{ ind }}" id="{{ ind }}" value="{{ config.farben_amerikanisch[ind] }}" class="form-control input-lg">
                                         </div>
                                     {% endfor %}
                                 </div>
                                 <div class="form-group col-12 mt-2 p-2">
                                     <label for="helligkeit">Helligkeit</label>
-                                    <input autocomplete="off" type="range" min="0.1" max="1" name="helligkeit" id="helligkeit" value="{{ config.farben_gafor.helligkeit }}" step="0.1" class="form-control input-lg">
+                                    <input autocomplete="off" type="range" min="0.1" max="1" name="helligkeit" id="helligkeit" value="{{ config.helligkeit }}" step="0.1" class="form-control input-lg">
                                     <p class="text-center" id="anzeige"></p>
                                 </div>
                             </div>
@@ -158,19 +158,22 @@
         handleVersion(version);
 
         // GAFOR Farbsystem zurücksetzen
-        {% for ind in ("charlie", "charlie_bei_wind", "oscar", "oscar_bei_wind", "delta", "delta_bei_wind", "mike", "mike_bei_wind", "xray", "xray_bei_wind", "blitze") %}
-        formular.elements["{{ ind }}-gafor"].value = "{{ standard.farben_gafor[ind] }}";
+        {% for ind in ("charlie", "charlie_bei_wind", "oscar", "oscar_bei_wind", "delta", "delta_bei_wind", "mike", "mike_bei_wind", "xray", "xray_bei_wind", "blitze-gafor") %}
+        formular.elements["{{ ind }}"].value = "{{ standard.farben_gafor[ind] }}";
         {% endfor %}
 
         // Amerikanisches Farbsystem zurücksetzen
-        {% for ind in ("vfr", "vfr_bei_wind", "mvfr", "mvfr_bei_wind", "ifr", "ifr_bei_wind", "lifr", "lifr_bei_wind", "blitze", "hoher_wind") %}
-        formular.elements["{{ ind }}-amerikanisch"].value = "{{ standard.farben_amerikanisch[ind] }}";
+        {% for ind in ("vfr", "vfr_bei_wind", "mvfr", "mvfr_bei_wind", "ifr", "ifr_bei_wind", "lifr", "lifr_bei_wind", "blitze-amerikanisch", "hoher_wind") %}
+        formular.elements["{{ ind }}"].value = "{{ standard.farben_amerikanisch[ind] }}";
         {% endfor %}
 
         // Wind zurücksetzen
         formular.elements["normal"].value = "{{ standard.wind.normal }}";
         formular.elements["hoch"].value = "{{ standard.wind.hoch }}";
         formular.elements["frequenz"].value = "{{ standard.wind.frequenz }}";
+
+        // Helligkeit zurücksetzen
+        formular.elements["helligkeit"].value = "{{ standard.helligkeit }}";
 
         // Zeiten zurücksetzen
         formular.elements["dauerbetrieb"].checked = false;
