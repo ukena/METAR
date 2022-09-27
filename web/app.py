@@ -4,7 +4,7 @@ import yaml
 
 app = Flask(__name__)
 
-PI = False
+PI = True
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -58,36 +58,12 @@ def index():
                     f.write(cron_aus + "\n")
                 subprocess.call(["sudo", "crontab", "/home/pi/karte/crontab", "-"])
 
-            # neue WLAN Einstellungen in wpa_supplicant.conf schreiben
-            # wpa_supplicant.conf öffnen und als Objekt instanziieren
-            with open("/etc/wpa_supplicant/wpa_supplicant-wlan0.conf", "r") as f:
-                in_file = f.readlines()
-                f.close()
+            # WLAN Einstellungen überarbeiten
+            subprocess.call(["wpa_cli", "-i", "wlan0", "set_network ", "0", "ssid", config["wlan"]["ssid"]])
+            subprocess.call(["wpa_cli", "-i", "wlan0", "set_network ", "0", "psk", config["wlan"]["passwort"]])
 
-            # variablen außerhalb der iteration, um ssid und psk nicht mehrmals zu ändern
-            out_file = []
-            edited_psk = False
-            edited_ssid = False
-            # über wpa_supplicant.conf iterieren
-            for line in in_file:
-                # WLAN Passwort ändern
-                if "psk" in line and not edited_psk:
-                    line = '    psk=' + '"' + config["wlan"]["passwort"] + '"' + '\n'
-                    edited_psk = True
-                # WLAN ssid ändern
-                elif "ssid" in line and not edited_ssid:
-                    line = '    ssid=' + '"' + config["wlan"]["ssid"] + '"' + '\n'
-                    edited_ssid = True
-                # Zeile in neue Datei schreiben
-                out_file.append(line)
-
-            # wpa_supplicant.conf mit neuen Werten überschreiben
-            with open("/etc/wpa_supplicant/wpa_supplicant-wlan0.conf", "w") as f:
-                for line in out_file:
-                    f.write(line)
-
-            # neustart
-            subprocess.call(["reboot"])
+            # wieder mit dem normalen WLAN verbinden
+            subprocess.call(["wpa_cli", "-i", "wlan0", "reconfigure"])
 
     return render_template("index.html", config=config, standard=standard)
 
