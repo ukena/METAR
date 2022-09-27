@@ -22,7 +22,7 @@ version = config["version"]
 
 LED_COUNT = 100
 LED_PIN = board.D18
-LED_BRIGHTNESS = float(config["farben_amerikanisch"]["helligkeit"]) if version == "amerikanisch" else float(config["farben_gafor"]["helligkeit"])
+LED_BRIGHTNESS = float(config["helligkeit"])
 LED_ORDER = neopixel.GRB
 COLOR_CLEAR = (0, 0, 0)
 
@@ -35,7 +35,7 @@ COLOR_IFR = hex_to_grb(config["farben_amerikanisch"]["ifr"])
 COLOR_IFR_FADE = hex_to_grb(config["farben_amerikanisch"]["ifr_bei_wind"])
 COLOR_LIFR = hex_to_grb(config["farben_amerikanisch"]["lifr"])
 COLOR_LIFR_FADE = hex_to_grb(config["farben_amerikanisch"]["lifr_bei_wind"])
-COLOR_LIGHTNING = hex_to_grb(config["farben_amerikanisch"]["blitze"])
+COLOR_LIGHTNING = hex_to_grb(config["farben_amerikanisch"]["blitze-amerikanisch"])
 COLOR_HIGH_WINDS = hex_to_grb(config["farben_amerikanisch"]["hoher_wind"])
 
 # Farben GAFOR
@@ -49,7 +49,7 @@ COLOR_GAFOR_M = hex_to_grb(config["farben_gafor"]["mike"])
 COLOR_GAFOR_M_WIND = hex_to_grb(config["farben_gafor"]["mike_bei_wind"])
 COLOR_GAFOR_X = hex_to_grb(config["farben_gafor"]["xray"])
 COLOR_GAFOR_X_WIND = hex_to_grb(config["farben_gafor"]["xray_bei_wind"])
-COLOR_GAFOR_BLITZE = hex_to_grb(config["farben_gafor"]["blitze"])
+COLOR_GAFOR_BLITZE = hex_to_grb(config["farben_gafor"]["blitze-gafor"])
 
 WIND_BLINK_THRESHOLD = int(config["wind"]["normal"])
 HIGH_WINDS_THRESHOLD = int(config["wind"]["hoch"])
