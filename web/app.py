@@ -4,7 +4,7 @@ import yaml
 
 app = Flask(__name__)
 
-PI = True
+PI = False
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -27,16 +27,8 @@ def index():
                     config["farben_amerikanisch"][key] = data
             elif key in ("normal", "hoch", "frequenz"):
                 config["wind"][key] = data
-            elif key in ("an", "aus"):
+            elif key in ("an", "aus", "dauerbetrieb"):
                 config["zeiten"][key] = data
-                # zeiten in crontab schreiben
-                if PI:
-                    with open("/home/pi/karte/crontab", "w+") as f:
-                        cron_an = f"*/5 {config['zeiten']['an']}-{int(config['zeiten']['aus']) - 1} * * *  /home/pi/karte/refresh.sh"
-                        cron_aus = f"*/5 {config['zeiten']['aus']} * * *     /home/pi/karte/lightsoff.sh"
-                        f.write(cron_an + "\n")
-                        f.write(cron_aus + "\n")
-                    subprocess.call(["sudo", "crontab", "/home/pi/karte/crontab", "-"])
             elif key == "flugplaetze":
                 config["flugplaetze"] = [i.strip() for i in data.split("\r")]
             elif key == "update-branch":
@@ -50,24 +42,46 @@ def index():
         with open("/home/pi/config.yaml" if PI else "config.yaml", "w") as f:
             yaml.dump(config, f)
 
-        # neue WLAN Einstellungen in wpa_supplicant.conf schreiben
         if PI:
+            if config["zeiten"]["dauerbetrieb"] == "on":
+                # Dauerbetrieb ist aktiv → cronjob anpassen, damit lightsoff.sh nicht ausgeführt wird
+                with open("/home/pi/karte/crontab", "w+") as f:
+                    cron_an = "*/5 * * * *  /home/pi/karte/refresh.sh"
+                    f.write(cron_an + "\n")
+                subprocess.call(["sudo", "crontab", "/home/pi/karte/crontab", "-"])
+            else:
+                # Dauerbetrieb ist aus → Zeiten in crontab schreiben
+                with open("/home/pi/karte/crontab", "w+") as f:
+                    cron_an = f"*/5 {config['zeiten']['an']}-{int(config['zeiten']['aus']) - 1} * * *  /home/pi/karte/refresh.sh"
+                    cron_aus = f"*/5 {config['zeiten']['aus']} * * *     /home/pi/karte/lightsoff.sh"
+                    f.write(cron_an + "\n")
+                    f.write(cron_aus + "\n")
+                subprocess.call(["sudo", "crontab", "/home/pi/karte/crontab", "-"])
+
+            # neue WLAN Einstellungen in wpa_supplicant.conf schreiben
+            # wpa_supplicant.conf öffnen und als Objekt instanziieren
             with open("/etc/wpa_supplicant/wpa_supplicant-wlan0.conf", "r") as f:
                 in_file = f.readlines()
                 f.close()
 
+            # variablen außerhalb der iteration, um ssid und psk nicht mehrmals zu ändern
             out_file = []
             edited_psk = False
             edited_ssid = False
+            # über wpa_supplicant.conf iterieren
             for line in in_file:
+                # WLAN Passwort ändern
                 if "psk" in line and not edited_psk:
                     line = '    psk=' + '"' + config["wlan"]["passwort"] + '"' + '\n'
                     edited_psk = True
+                # WLAN ssid ändern
                 elif "ssid" in line and not edited_ssid:
                     line = '    ssid=' + '"' + config["wlan"]["ssid"] + '"' + '\n'
                     edited_ssid = True
+                # Zeile in neue Datei schreiben
                 out_file.append(line)
 
+            # wpa_supplicant.conf mit neuen Werten überschreiben
             with open("/etc/wpa_supplicant/wpa_supplicant-wlan0.conf", "w") as f:
                 for line in out_file:
                     f.write(line)

@@ -34,6 +34,7 @@ wlan:
 zeiten:
   an: '8'
   aus: '22'
+  dauerbetrieb: false
 flugplaetze:
   - "LOXZ"
   - "NULL"

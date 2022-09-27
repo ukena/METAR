@@ -41,3 +41,7 @@ input[type="color" i] {
 .form-row {
     display: inline-block !important;
 }
+
+.form-control:disabled {
+    cursor: not-allowed;
+}
