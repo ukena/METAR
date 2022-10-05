@@ -1,5 +1,5 @@
 farben_amerikanisch:
-  blitze: '#ffffff'
+  blitze-amerikanisch: '#ffffff'
   helligkeit: '0.5'
   hoher_wind: '#ffff00'
   ifr: '#ff0000'
@@ -11,7 +11,7 @@ farben_amerikanisch:
   vfr: '#00ff00'
   vfr_bei_wind: '#007d00'
 farben_gafor:
-  blitze: '#ffffff'
+  blitze-gafor: '#ffffff'
   charlie: '#0038ff'
   charlie_bei_wind: '#001c80'
   delta: '#ffff00'
