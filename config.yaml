@@ -1,6 +1,7 @@
+version: 'gafor'
+helligkeit: '0.5'
 farben_amerikanisch:
   blitze-amerikanisch: '#ffffff'
-  helligkeit: '0.5'
   hoher_wind: '#ffff00'
   ifr: '#ff0000'
   ifr_bei_wind: '#7d0000'
@@ -16,13 +17,23 @@ farben_gafor:
   charlie_bei_wind: '#001c80'
   delta: '#ffff00'
   delta_bei_wind: '#808000'
-  helligkeit: '0.5'
   mike: '#ff8800'
   mike_bei_wind: '#804400'
   oscar: '#32ae00'
   oscar_bei_wind: '#195700'
   xray: '#c90000'
   xray_bei_wind: '#640000'
+wind:
+  frequenz: '1'
+  hoch: '25'
+  normal: '15'
+wlan:
+  passwort: '0123456789'
+  ssid: FRITZ!Box 7590 TN
+zeiten:
+  an: '8'
+  aus: '22'
+  dauerbetrieb: 'off'
 flugplaetze:
   - "LOXZ"
   - "NULL"
@@ -111,14 +122,3 @@ flugplaetze:
   - "LSZH"
   - "LFSB"
   - "LSZB"
-version: gafor
-wind:
-  frequenz: '1'
-  hoch: '25'
-  normal: '15'
-wlan:
-  passwort: vqjaynua
-  ssid: FRITZ!Box 7590 TN Kellervorraum
-zeiten:
-  an: '8'
-  aus: '22'
