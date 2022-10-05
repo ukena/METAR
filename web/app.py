@@ -1,11 +1,13 @@
 import subprocess
 from flask import Flask, render_template, request
 import yaml
+import logging
 
 app = Flask(__name__)
 
 # zum debuggen, wenn lokal dann False, in Production True
-PI = False
+PI = True
+logging.basicConfig(filename='/home/pi/web/debug.log', encoding='utf-8', level=logging.DEBUG, force=True)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -38,6 +40,7 @@ def index():
                 config["flugplaetze"] = [i.strip() for i in data.split("\r")]
             elif key == "update-branch":
                 if data in ("master", "dev"):
+                    logging.debug("git reset")
                     # repo auf den Stand des remote branches bringen
                     subprocess.Popen(["git", "fetch", "--all"], cwd="/home/pi")
                     subprocess.Popen(["git", "reset", "--hard", f"origin/{data}"], cwd="/home/pi")
