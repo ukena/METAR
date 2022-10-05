@@ -11,7 +11,7 @@ def load_settings():
     # normales WLAN deaktivieren
     subprocess.call(["wpa_cli", "-i", "wlan0", "disable_network", "0"])
     # LEDs ausschalten
-    subprocess.call(["/usr/bin/python3", "/home/pi/karte/pixelsoff.py"])
+    subprocess.call(["sudo", "/home/pi/karte/lightsoff.sh"])
     # normales WLAN aktivieren (Verbindung aber erst nach dem Laden der Einstellungen)
     subprocess.call(["wpa_cli", "-i", "wlan0", "enable_network", "0"])
 
