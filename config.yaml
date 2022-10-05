@@ -1,6 +1,5 @@
 farben_amerikanisch:
-  blitze: '#ffffff'
-  helligkeit: '0.5'
+  blitze-amerikanisch: '#ffffff'
   hoher_wind: '#ffff00'
   ifr: '#ff0000'
   ifr_bei_wind: '#7d0000'
@@ -11,12 +10,11 @@ farben_amerikanisch:
   vfr: '#00ff00'
   vfr_bei_wind: '#007d00'
 farben_gafor:
-  blitze: '#ffffff'
+  blitze-gafor: '#ffffff'
   charlie: '#0038ff'
   charlie_bei_wind: '#001c80'
   delta: '#ffff00'
   delta_bei_wind: '#808000'
-  helligkeit: '0.5'
   mike: '#ff8800'
   mike_bei_wind: '#804400'
   oscar: '#32ae00'
@@ -24,93 +22,94 @@ farben_gafor:
   xray: '#c90000'
   xray_bei_wind: '#640000'
 flugplaetze:
-  - "LOXZ"
-  - "NULL"
-  - "LOWL"
-  - "LOWS"
-  - "EDDM"
-  - "EDMO"
-  - "LOWI"
-  - "ETHA"
-  - "ETSL"
-  - "ETSI"
-  - "ETIH"
-  - "ETIC"
-  - "LKLN"
-  - "LKPR"
-  - "LKKV"
-  - "EDQM"
-  - "EDDE"
-  - "EDBC"
-  - "EDDP"
-  - "EDAC"
-  - "EDDC"
-  - "ETSH"
-  - "EDDB"
-  - "NULL"
-  - "EPSC"
-  - "EDAH"
-  - "NULL"
-  - "ETNL"
-  - "EDHL"
-  - "EDHK"
-  - "ETNH"
-  - "NULL"
-  - "EDXW"
-  - "NULL"
-  - "EDDH"
-  - "EDHI"
-  - "ETMN"
-  - "ETNT"
-  - "EDWE"
-  - "EHGG"
-  - "ETWM"
-  - "EDDG"
-  - "ETND"
-  - "EDDW"
-  - "ETHS"
-  - "EDVE"
-  - "ETHC"
-  - "EDDV"
-  - "ETNW"
-  - "ETHB"
-  - "EDVK"
-  - "ETHF"
-  - "EDLP"
-  - "EDLW"
-  - "EDDL"
-  - "EDLV"
-  - "EDLN"
-  - "ETNG"
-  - "ETNN"
-  - "EDDK"
-  - "EDGS"
-  - "EDDF"
-  - "ETOU"
-  - "EDFH"
-  - "ETSB"
-  - "ETAD"
-  - "ELLX"
-  - "ETEK"
-  - "EDDR"
-  - "ETAR"
-  - "EDFM"
-  - "EDTY"
-  - "ETHN"
-  - "ETIK"
-  - "ETEB"
-  - "EDDN"
-  - "ETSN"
-  - "EDMA"
-  - "EDJA"
-  - "EDNY"
-  - "ETHL"
-  - "EDDS"
-  - "EDSB"
-  - "EDTL"
-  - "LSZH"
-  - "LFSB"
-  - "LSZB"
+- LOXZ
+- 'NULL'
+- LOWL
+- LOWS
+- EDDM
+- EDMO
+- LOWI
+- ETHA
+- ETSL
+- ETSI
+- ETIH
+- ETIC
+- LKLN
+- LKPR
+- LKKV
+- EDQM
+- EDDE
+- EDBC
+- EDDP
+- EDAC
+- EDDC
+- ETSH
+- EDDB
+- 'NULL'
+- EPSC
+- EDAH
+- 'NULL'
+- ETNL
+- EDHL
+- EDHK
+- ETNH
+- 'NULL'
+- EDXW
+- 'NULL'
+- EDDH
+- EDHI
+- ETMN
+- ETNT
+- EDWE
+- EHGG
+- ETWM
+- EDDG
+- ETND
+- EDDW
+- ETHS
+- EDVE
+- ETHC
+- EDDV
+- ETNW
+- ETHB
+- EDVK
+- ETHF
+- EDLP
+- EDLW
+- EDDL
+- EDLV
+- EDLN
+- ETNG
+- ETNN
+- EDDK
+- EDGS
+- EDDF
+- ETOU
+- EDFH
+- ETSB
+- ETAD
+- ELLX
+- ETEK
+- EDDR
+- ETAR
+- EDFM
+- EDTY
+- ETHN
+- ETIK
+- ETEB
+- EDDN
+- ETSN
+- EDMA
+- EDJA
+- EDNY
+- ETHL
+- EDDS
+- EDSB
+- EDTL
+- LSZH
+- LFSB
+- LSZB
+helligkeit: '0.5'
 version: gafor
 wind:
   frequenz: '1'
@@ -118,7 +117,8 @@ wind:
   normal: '15'
 wlan:
   passwort: vqjaynua
-  ssid: FRITZ!Box 7590 TN Kellervorraum
+  ssid: FRITZ!Box 7590 TN
 zeiten:
   an: '8'
   aus: '22'
+  dauerbetrieb: 'off'
