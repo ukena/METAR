@@ -2,6 +2,7 @@ import subprocess
 from flask import Flask, render_template, request
 import yaml
 import logging
+import git
 
 app = Flask(__name__)
 
@@ -42,8 +43,9 @@ def index():
                 if data in ("master", "dev"):
                     logging.debug("git reset")
                     # repo auf den Stand des remote branches bringen
-                    subprocess.Popen(["git", "fetch", "--all"], cwd="/home/pi")
-                    subprocess.Popen(["git", "reset", "--hard", f"origin/{data}"], cwd="/home/pi")
+                    g = git.cmd.Git("/home/pi")
+                    g.fetch("--all")
+                    g.reset("--hard", f"origin/{data}")
                     # Permissions updaten, damit cron funktioniert und alle Skripte ausführbar sind
                     subprocess.call(["sudo", "chmod", "+x", "/home/pi/handle_permissions.sh"])
                     subprocess.call(["sudo", "/home/pi/handle_permissions.sh"])
