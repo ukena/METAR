@@ -38,12 +38,12 @@ def index():
         for key in ("charlie", "charlie_bei_wind", "oscar", "oscar_bei_wind", "delta", "delta_bei_wind", "mike", "mike_bei_wind", "xray", "xray_bei_wind", "blitze-gafor"):
             config["farben_gafor"][key] = request.form[key]
         # Wind
-        config["wind"]["normal"] = request.form["normal"]
-        config["wind"]["hoch"] = request.form["hoch"]
-        config["wind"]["frequenz"] = request.form["frequenz"]
+        config["wind"]["normal"] = request.form.get("normal", "15")
+        config["wind"]["hoch"] = request.form.get("hoch", "25")
+        config["wind"]["frequenz"] = request.form.get("frequenz", "1")
         # Zeiten
-        config["zeiten"]["an"] = request.form["an"]
-        config["zeiten"]["aus"] = request.form["aus"]
+        config["zeiten"]["an"] = request.form.get("an", "8")
+        config["zeiten"]["aus"] = request.form.get("aus", "22")
         config["zeiten"]["dauerbetrieb"] = request.form.get("dauerbetrieb", False)
         # Flugplätze
         config["flugplaetze"] = [i.strip() for i in request.form["flugplaetze"].split("\r")]
