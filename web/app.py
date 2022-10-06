@@ -44,7 +44,7 @@ def index():
         # Zeiten
         config["zeiten"]["an"] = request.form["an"]
         config["zeiten"]["aus"] = request.form["aus"]
-        config["zeiten"]["dauerbetrieb"] = request.form["dauerbetrieb"]
+        config["zeiten"]["dauerbetrieb"] = request.form.get("dauerbetrieb", False)
         # Flugplätze
         config["flugplaetze"] = [i.strip() for i in request.form["flugplaetze"].split("\r")]
         # Update
@@ -63,7 +63,7 @@ def index():
             yaml.dump(config, f)
 
         if PI:
-            if config["zeiten"]["dauerbetrieb"] == "on":
+            if config["zeiten"]["dauerbetrieb"]:
                 # Dauerbetrieb ist aktiv → cronjob anpassen, damit lightsoff.sh nicht ausgeführt wird
                 with open("/home/pi/karte/crontab", "w+") as f:
                     cron_an = "*/5 * * * *  /home/pi/karte/refresh.sh"
