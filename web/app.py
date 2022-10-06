@@ -41,7 +41,7 @@ def index():
                 config["flugplaetze"] = [i.strip() for i in data.split("\r")]
             elif key == "update-branch":
                 if data in ("master", "dev"):
-                    logging.debug("git reset")
+                    logging.debug(f"git reset auf branch {data}")
                     # repo auf den Stand des remote branches bringen
                     g = git.cmd.Git("/home/pi")
                     g.fetch("--all")
@@ -61,6 +61,7 @@ def index():
                     cron_an = "*/5 * * * *  /home/pi/karte/refresh.sh"
                     f.write(cron_an + "\n")
                 subprocess.call(["sudo", "crontab", "/home/pi/karte/crontab", "-"])
+                logging.debug(f"cronjob angepasst: {cron_an}")
             else:
                 # Dauerbetrieb ist aus → Zeiten in crontab schreiben
                 with open("/home/pi/karte/crontab", "w+") as f:
@@ -69,6 +70,7 @@ def index():
                     f.write(cron_an + "\n")
                     f.write(cron_aus + "\n")
                 subprocess.call(["sudo", "crontab", "/home/pi/karte/crontab", "-"])
+                logging.debug(f"cronjob angepasst: {cron_an} und {cron_aus}")
 
             # WLAN Einstellungen überarbeiten
             subprocess.call(["wpa_cli", "-i", "wlan0", "set_network", "0", "ssid", f'{config["wlan"]["ssid"]}'])
@@ -76,6 +78,7 @@ def index():
 
             # wieder mit dem normalen WLAN verbinden
             subprocess.call(["wpa_cli", "-i", "wlan0", "reconfigure"])
+            logging.debug("wpa_cli ausgeführt")
 
     return render_template("index.html", config=config, standard=standard)
 
