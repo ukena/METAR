@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # pip installieren
 sudo apt install python3-pip -y
+sudo apt install python3-git -y
 # pip requirements installieren
 sudo pip3 install -r /home/pi/requirements.txt
 sudo python3 -m pip install --force-reinstall adafruit-blinka

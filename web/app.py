@@ -71,8 +71,8 @@ def index():
                 subprocess.call(["sudo", "crontab", "/home/pi/karte/crontab", "-"])
 
             # WLAN Einstellungen überarbeiten
-            subprocess.call(["wpa_cli", "-i", "wlan0", "set_network ", "0", "ssid", f'{config["wlan"]["ssid"]}'])
-            subprocess.call(["wpa_cli", "-i", "wlan0", "set_network ", "0", "psk", f'{config["wlan"]["passwort"]}'])
+            subprocess.call(["wpa_cli", "-i", "wlan0", "set_network", "0", "ssid", f'{config["wlan"]["ssid"]}'])
+            subprocess.call(["wpa_cli", "-i", "wlan0", "set_network", "0", "psk", f'{config["wlan"]["passwort"]}'])
 
             # wieder mit dem normalen WLAN verbinden
             subprocess.call(["wpa_cli", "-i", "wlan0", "reconfigure"])
