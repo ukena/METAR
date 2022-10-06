@@ -22,11 +22,14 @@ def index():
     # wenn Formular abgeschickt wurde
     if request.method == "POST":
         # WLAN Konfiguration
+        logging.debug(f"WLAN {request.form['ssid']} {request.form['passwort']}")
         config["wlan"]["ssid"] = request.form["ssid"]
-        config["wlan"]["password"] = request.form["password"]
+        config["wlan"]["passwort"] = request.form["passwort"]
         # Version
+        logging.debug(f"Version {request.form['version']}")
         config["version"] = request.form["version"]
         # Helligkeit
+        logging.debug(f"Helligkeit {request.form['helligkeit']}")
         config["helligkeit"] = request.form["helligkeit"]
         # Farben Amerikanisch
         for key in ("vfr", "vfr_bei_wind", "mvfr", "mvfr_bei_wind", "ifr", "ifr_bei_wind", "lifr", "lifr_bei_wind", "blitze-amerikanisch", "hoher_wind"):
@@ -88,4 +91,4 @@ def index():
     return render_template("index.html", config=config, standard=standard)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=80)
+    app.run(host="0.0.0.0", port=80, debug=True)
