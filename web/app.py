@@ -21,34 +21,39 @@ def index():
 
     # wenn Formular abgeschickt wurde
     if request.method == "POST":
-        # über alle Formularfelder iterieren und die Werte in die aktuelle Konfiguration schreiben
-        for key, data in request.form.items():
-            if key in ("ssid", "passwort"):
-                config["wlan"][key] = data
-            elif key == "version":
-                config["version"] = data
-            elif key == "helligkeit":
-                config["helligkeit"] = data
-            elif key in ("vfr", "vfr_bei_wind", "mvfr", "mvfr_bei_wind", "ifr", "ifr_bei_wind", "lifr", "lifr_bei_wind", "blitze-amerikanisch", "hoher_wind"):
-                config["farben_amerikanisch"][key] = data
-            elif key in ("charlie", "charlie_bei_wind", "oscar", "oscar_bei_wind", "delta", "delta_bei_wind", "mike", "mike_bei_wind", "xray", "xray_bei_wind", "blitze-gafor"):
-                config["farben_gafor"][key] = data
-            elif key in ("normal", "hoch", "frequenz"):
-                config["wind"][key] = data
-            elif key in ("an", "aus", "dauerbetrieb"):
-                config["zeiten"][key] = data
-            elif key == "flugplaetze":
-                config["flugplaetze"] = [i.strip() for i in data.split("\r")]
-            elif key == "update-branch":
-                if data in ("master", "dev"):
-                    logging.debug(f"git reset auf branch {data}")
-                    # repo auf den Stand des remote branches bringen
-                    g = git.cmd.Git("/home/pi")
-                    g.fetch("--all")
-                    g.reset("--hard", f"origin/{data}")
-                    # Permissions updaten, damit cron funktioniert und alle Skripte ausführbar sind
-                    subprocess.call(["sudo", "chmod", "+x", "/home/pi/handle_permissions.sh"])
-                    subprocess.call(["sudo", "/home/pi/handle_permissions.sh"])
+        # WLAN Konfiguration
+        config["wlan"]["ssid"] = request.form["ssid"]
+        config["wlan"]["password"] = request.form["password"]
+        # Version
+        config["version"] = request.form["version"]
+        # Helligkeit
+        config["helligkeit"] = request.form["helligkeit"]
+        # Farben Amerikanisch
+        for key in ("vfr", "vfr_bei_wind", "mvfr", "mvfr_bei_wind", "ifr", "ifr_bei_wind", "lifr", "lifr_bei_wind", "blitze-amerikanisch", "hoher_wind"):
+            config["farben_amerikanisch"][key] = request.form[key]
+        # Farben GAFOR
+        for key in ("charlie", "charlie_bei_wind", "oscar", "oscar_bei_wind", "delta", "delta_bei_wind", "mike", "mike_bei_wind", "xray", "xray_bei_wind", "blitze-gafor"):
+            config["farben_gafor"][key] = request.form[key]
+        # Wind
+        config["wind"]["normal"] = request.form["normal"]
+        config["wind"]["hoch"] = request.form["hoch"]
+        config["wind"]["frequenz"] = request.form["frequenz"]
+        # Zeiten
+        config["zeiten"]["an"] = request.form["an"]
+        config["zeiten"]["aus"] = request.form["aus"]
+        config["zeiten"]["dauerbetrieb"] = request.form["dauerbetrieb"]
+        # Flugplätze
+        config["flugplaetze"] = [i.strip() for i in request.form["flugplaetze"].split("\r")]
+        # Update
+        if request.form["update-branch"] in ("master", "dev"):
+            logging.debug(f"git reset auf branch {request.form['update-branch']}")
+            # repo auf den Stand des remote branches bringen
+            g = git.cmd.Git("/home/pi")
+            g.fetch("--all")
+            g.reset("--hard", f"origin/{request.form['update-branch']}")
+            # Permissions updaten, damit cron funktioniert und alle Skripte ausführbar sind
+            subprocess.call(["sudo", "chmod", "+x", "/home/pi/handle_permissions.sh"])
+            subprocess.call(["sudo", "/home/pi/handle_permissions.sh"])
 
         # neue config parsen
         with open("/home/pi/config.yaml" if PI else "config.yaml", "w") as f:
