@@ -58,7 +58,7 @@ def index():
     # wenn Formular abgeschickt wurde
     if request.method == "POST":
         # WLAN Konfiguration
-        logging.debug(f"WLAN {request.form['ssid']} {request.form['passwort']}")
+        logging.debug(f"WLAN {request.form['form_ssid']} {request.form['passwort']}")
         config["wlan"]["ssid"] = request.form["ssid"]
         config["wlan"]["passwort"] = request.form["passwort"]
         # Version

@@ -5,3 +5,5 @@ adafruit-circuitpython-neopixel
 adafruit-circuitpython-pixelbuf
 GitPython
 requests
+Flask-WTF
+lxml

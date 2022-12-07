@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import yaml
 import urllib.request
-import xml.etree.ElementTree as ET
+from lxml import etree
 import board
 import neopixel
 import time
@@ -71,7 +71,8 @@ headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/
 content = requests.get(url, headers=headers).text
 
 # XML parsen
-root = ET.fromstring(content)
+parser = etree.XMLParser(recover=True)
+root = etree.fromstring(content, parser=parser)
 
 # dictionary für jede Beobachtung
 beobachtung = {}
