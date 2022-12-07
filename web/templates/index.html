@@ -37,12 +37,12 @@
                               Die METAR Karte benötigt zwingend eine WLAN-Verbindung, um die neusten Wetterinformationen abzurufen. Bitte gib daher hier Deine WLAN-Daten ein. Wenn Du auf speichern klickst und das System neu startet, dann versucht es sich mit dem hier eingestellten WLAN zu verbinden. Wenn es das nicht kann, dann wird nach einiger Zeit automatisch wieder der Hotspot aktiviert und Du kannst die Einstellung hier nochmal ändern.
                             </div>
                             <div class="form-group col-12 mt-2">
-                                <label for="ssid">SSID (Name) *</label>
-                                <input required type="text" class="form-control" id="ssid" name="ssid" value="{{ config.wlan.ssid }}">
+                                {{ form.form_ssid.label }}
+                                {{ form.form_ssid() }}
                             </div>
                             <div class="form-group col-12 mt-2">
-                                <label for="passwort">WLAN Passwort *</label>
-                                <input required type="password" class="form-control" id="passwort" name="passwort" value="{{ config.wlan.passwort }}">
+                                {{ form.form_passwort.label }}
+                                {{ form.form_passwort() }}
                             </div>
                         </div>
                         <div class="tab-pane fade" id="version" role="tabpanel" aria-labelledby="version">
@@ -50,65 +50,61 @@
                               Hier kannst Du einstellen, ob Du die GAFOR oder die amerikanische Version der Karte hast. Dadurch kannst Du Dich auch jederzeit für die andere Version entscheiden. Die Auswahl hier hat Auswirkungen auf die verfügbaren Einstellungen im Tab Farben und Wind.
                             </div>
                             <div class="form-group col-12 mt-2">
-                                <input type="radio" id="gafor" name="version" value="gafor" checked onchange="handleVersion(this)">
-                                <label for="gafor">GAFOR</label>
-                            </div>
-                            <div class="form-group col-12 mt-2">
-                                <input type="radio" id="amerikanisch" name="version" value="amerikanisch" onchange="handleVersion(this)">
-                                <label for="amerikanisch">Amerikanisch</label>
+                                {{ form.form_version.label }}
+                                {{ form.form_version() }}
                             </div>
                         </div>
                         <div class="tab-pane fade" id="farben" role="tabpanel" aria-labelledby="farben">
                             <div class="form-row">
                                 <div id="farben-gafor">
-                                    {% for ind in ("charlie", "charlie_bei_wind", "oscar", "oscar_bei_wind", "delta", "delta_bei_wind", "mike", "mike_bei_wind", "xray", "xray_bei_wind", "blitze-gafor") %}
+                                    {% for ind in FARBEN_GAFOR %}
                                         <div class="form-group col-6 mt-2 p-2">
-                                            <label for="{{ ind }}">{{ ind.replace('_', ' ').replace('-gafor', '') }}</label>
-                                            <input type="color" name="{{ ind }}" id="{{ ind }}" value="{{ config.farben_gafor[ind] }}" class="form-control input-lg">
+                                            {{ form.__dict__["form_" + ind].label }}
+                                            {{ form.__dict__["form_" + ind]() }}
                                         </div>
                                     {% endfor %}
                                 </div>
                                 <div id="farben-amerikanisch" style="display: none;">
-                                    {% for ind in ("vfr", "vfr_bei_wind", "mvfr", "mvfr_bei_wind", "ifr", "ifr_bei_wind", "lifr", "lifr_bei_wind", "blitze-amerikanisch", "hoher_wind") %}
+                                    {% for ind in FARBEN_AMERIKANISCH %}
                                         <div class="form-group col-6 mt-2 p-2">
-                                            <label for="{{ ind }}">{{ ind.replace('_', ' ').replace('-amerikanisch', '') }}</label>
-                                            <input type="color" name="{{ ind }}" id="{{ ind }}" value="{{ config.farben_amerikanisch[ind] }}" class="form-control input-lg">
+                                            {{ form.__dict__["form_" + ind].label }}
+                                            {{ form.__dict__["form_" + ind]() }}
                                         </div>
                                     {% endfor %}
                                 </div>
                                 <div class="form-group col-12 mt-2 p-2">
-                                    <label for="helligkeit">Helligkeit</label>
-                                    <input autocomplete="off" type="range" min="0.1" max="1" name="helligkeit" id="helligkeit" value="{{ config.helligkeit }}" step="0.1" class="form-control input-lg">
-                                    <p class="text-center" id="anzeige"></p>
+                                    {{ form.form_helligkeit.label }}
+                                    {{ form.form_helligkeit(min=0.1, max=1, step=0.1) }}
+                                    <p class="text-center" id="anzeige">{{ form.form_helligkeit.data }}</p>
                                 </div>
                             </div>
                         </div>
                         <div class="tab-pane fade" id="wind" role="tabpanel" aria-labelledby="wind">
                             <div class="form-group col-12 mt-2">
-                                <label for="normal">Wind Blinken ab (kt)</label>
-                                <input type="number" min="1" class="form-control" id="normal" name="normal" value="{{ config.wind.normal }}">
+                                {{ form.form_normal.label }}
+                                {{ form.form_normal() }}
+                            </div>
+                            <div class="form-group col-12 mt-2" id="hoch-wrapper" style="display: none">
+                                {{ form.form_hoch.label }}
+                                {{ form.form_hoch() }}
                             </div>
                             <div class="form-group col-12 mt-2">
-                                <label id="hoch-label" for="hoch" style="display: none">Hoher Wind Blinken ab (kt)</label>
-                                <input type="number" min="2" class="form-control" id="hoch" name="hoch" value="{{ config.wind.hoch }}" style="display: none">
-                            </div>
-                            <div class="form-group col-12 mt-2">
-                                <label for="frequenz">Frequenz des Blinkens (sek)</label>
-                                <input type="number" min="1" class="form-control" id="frequenz" name="frequenz" value="{{ config.wind.frequenz }}">
+                                {{ form.form_frequenz.label }}
+                                {{ form.form_frequenz() }}
                             </div>
                         </div>
                         <div class="tab-pane fade" id="zeiten" role="tabpanel" aria-labelledby="zeiten">
                             <div class="form-group col-12 mt-3">
-                                <input type="checkbox" name="dauerbetrieb" id="dauerbetrieb">
-                                <label for="dauerbetrieb">Dauerbetrieb</label>
+                                {{ form.form_dauerbetrieb.label }}
+                                {{ form.form_dauerbetrieb() }}
                             </div>
                             <div class="form-group col-12 mt-2">
-                                <label for="an">Einschalten (z.B. 8 = 08:00 Uhr früh)</label>
-                                <input type="number" min="1" max="24" class="form-control" id="an" name="an" value="{{ config.zeiten.an }}">
+                                {{ form.form_an.label }}
+                                {{ form.form_an() }}
                             </div>
                             <div class="form-group col-12 mt-2">
-                                <label for="aus">Ausschalten (z.B. 20 = 20:00 Uhr abends)</label>
-                                <input type="number" min="1" max="24" class="form-control" id="aus" name="aus" value="{{ config.zeiten.aus }}">
+                                {{ form.form_aus.label }}
+                                {{ form.form_aus() }}
                             </div>
                         </div>
                         <div class="tab-pane fade" id="flugplaetze" role="tabpanel" aria-labelledby="flugplaetze">
@@ -116,7 +112,8 @@
                               Über diese Liste kann die Reihenfolge der Flugplätze festgelegt werden. Am besten Du lässt die Liste so wie sie ist. Nur falls Du z.B. einen Flugplatz nicht anzeigen lassen möchtest, dann kannst Du ihn durch "NULL" ersetzen. Allgemein kannst Du hier aber viel kaputt machen: Wenn Du z.B. einen Flugplatz hinzufügst dann verschieben sich alle Flugplätze um 1 und die LEDs leuchten womöglich nicht mehr an der richtigen Stelle. "NULL" bedeutet, dass die jeweilige LED am Strang nicht leuchtet.<br>An einigen Stellen steht schon "NULL", weil der LED Strang alle 5cm eine LED hat, die Bohrungen aber weiter auseinanderliegen und daher manche LEDs nicht leuchten sollen.
                             </div>
                             <div class="form-group col-12 mt-2">
-                                <textarea autocomplete="off" name="flugplaetze" rows="{{ config.flugplaetze | length }}" style="width: 100%;">{% for icao in config.flugplaetze %}{% if not loop.last %}{{ icao | string + "\n" }}{% else %}{{ icao | string }}{% endif %}{% endfor %}</textarea>
+                                {{ form.form_flugplaetze.label }}
+                                {{ form.form_flugplaetze(rows="30") }}
                             </div>
                         </div>
                         <div class="tab-pane fade" id="update" role="tabpanel" aria-labelledby="update">
@@ -149,46 +146,46 @@
 <script>
     let button = document.querySelector("#standard");
     let formular = document.querySelector("#einstellungen")
-    let dauerbetrieb = document.querySelector("#dauerbetrieb");
+    let dauerbetrieb = document.querySelector("#form_dauerbetrieb");
 
     button.addEventListener("click", function () {
         // Version auf GAFOR setzen
-        let version = formular.elements["version"][0];
+        let version = formular.elements["form_version"][0];
         version.checked = true;
         handleVersion(version);
 
         // GAFOR Farbsystem zurücksetzen
         {% for ind in ("charlie", "charlie_bei_wind", "oscar", "oscar_bei_wind", "delta", "delta_bei_wind", "mike", "mike_bei_wind", "xray", "xray_bei_wind", "blitze-gafor") %}
-        formular.elements["{{ ind }}"].value = "{{ standard.farben_gafor[ind] }}";
+        formular.elements["form_{{ ind }}"].value = "{{ standard.farben_gafor[ind] }}";
         {% endfor %}
 
         // Amerikanisches Farbsystem zurücksetzen
         {% for ind in ("vfr", "vfr_bei_wind", "mvfr", "mvfr_bei_wind", "ifr", "ifr_bei_wind", "lifr", "lifr_bei_wind", "blitze-amerikanisch", "hoher_wind") %}
-        formular.elements["{{ ind }}"].value = "{{ standard.farben_amerikanisch[ind] }}";
+        formular.elements["form_{{ ind }}"].value = "{{ standard.farben_amerikanisch[ind] }}";
         {% endfor %}
 
         // Wind zurücksetzen
-        formular.elements["normal"].value = "{{ standard.wind.normal }}";
-        formular.elements["hoch"].value = "{{ standard.wind.hoch }}";
-        formular.elements["frequenz"].value = "{{ standard.wind.frequenz }}";
+        formular.elements["form_normal"].value = "{{ standard.wind.normal }}";
+        formular.elements["form_hoch"].value = "{{ standard.wind.hoch }}";
+        formular.elements["form_frequenz"].value = "{{ standard.wind.frequenz }}";
 
         // Helligkeit zurücksetzen
-        formular.elements["helligkeit"].value = "{{ standard.helligkeit }}";
+        formular.elements["form_helligkeit"].value = "{{ standard.helligkeit }}";
 
         // Zeiten zurücksetzen
-        formular.elements["dauerbetrieb"].checked = false;
+        formular.elements["form_dauerbetrieb"].checked = false;
         handleZeiten();
-        formular.elements["an"].value = "{{ standard.zeiten.an }}";
-        formular.elements["aus"].value = "{{ standard.zeiten.aus }}";
+        formular.elements["form_an"].value = "{{ standard.zeiten.an }}";
+        formular.elements["form_aus"].value = "{{ standard.zeiten.aus }}";
 
         // Slider zurücksetzen
         document.querySelector("#anzeige").innerHTML = "0.5";
-        document.querySelector("#helligkeit").value = "0.5";
+        document.querySelector("#form_helligkeit").value = "0.5";
         handleSlider();
 
         // Flugplätze zurücksetzen
-        formular.elements["flugplaetze"].value = `{% for icao in standard.flugplaetze %}{% if not loop.last %}{{ icao | string + '\n' }}{% else %}{{ icao | string }}{% endif %}{% endfor %}`;
-        formular.elements["flugplaetze"].rows = "{{ standard.flugplaetze | length }}"
+        formular.elements["form_flugplaetze"].value = `{% for icao in standard.flugplaetze %}{% if not loop.last %}{{ icao | string + '\n' }}{% else %}{{ icao | string }}{% endif %}{% endfor %}`;
+        formular.elements["form_flugplaetze"].rows = "{{ standard.flugplaetze | length }}"
 
     });
 
@@ -200,7 +197,7 @@
 </script>
 <script>
     function handleSlider() {
-        const slider = document.querySelector("#helligkeit");
+        const slider = document.querySelector("#form_helligkeit");
         const output = document.querySelector("#anzeige");
         document.addEventListener("DOMContentLoaded", function() {
           output.innerHTML = slider.value;
@@ -222,21 +219,20 @@
     function handleVersion(e) {
         var farbenGAFOR = document.getElementById("farben-gafor");
         var farbenAmerikanisch = document.getElementById("farben-amerikanisch");
-        var hoherWind = document.getElementById("hoch");
-        var hoherWindLabel = document.getElementById("hoch-label");
+        var hoherWind = document.getElementById("hoch-wrapper");
 
-        if (e.value === "gafor") {
+        console.log(e)
+
+        if (e.value === "Gafor") {
 
             farbenGAFOR.style.display = "initial";
             farbenAmerikanisch.style.display = "none";
             hoherWind.style.display = "none";
-            hoherWindLabel.style.display = "none";
 
-        } else if (e.value === "amerikanisch") {
+        } else if (e.value === "Amerikanisch") {
             farbenAmerikanisch.style.display = "initial";
             farbenGAFOR.style.display = "none";
             hoherWind.style.display = "initial";
-            hoherWindLabel.style.display = "initial";
         }
         handleSlider();
     }
@@ -247,11 +243,11 @@
 
     function handleZeiten() {
       if (dauerbetrieb.checked) {
-        document.getElementById("an").disabled = true;
-        document.getElementById("aus").disabled = true;
+        document.getElementById("form_an").disabled = true;
+        document.getElementById("form_aus").disabled = true;
       } else {
-        document.getElementById("an").disabled = false;
-        document.getElementById("aus").disabled = false;
+        document.getElementById("form_an").disabled = false;
+        document.getElementById("form_aus").disabled = false;
       }
     }
 </script>

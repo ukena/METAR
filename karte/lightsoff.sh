@@ -1,3 +1,3 @@
-pkill -F /home/pi/karte/offpid.pid
-pkill -F /home/pi/karte/metarpid.pid
-/usr/bin/python3 /home/pi/karte/pixelsoff.py & echo $! > /home/pi/karte/offpid.pid
+pkill -F /home/metar/karte/offpid.pid
+pkill -F /home/metar/karte/metarpid.pid
+/usr/bin/python3 /home/metar/karte/pixelsoff.py & echo $! > /home/metar/karte/offpid.pid

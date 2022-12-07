@@ -1,2 +1,2 @@
-*/5 8-21 * * *  /home/pi/metar/karte/refresh.sh
-*/5 22 * * *     /home/pi/metar/karte/lightsoff.sh
+*/5 8-21 * * *  /home/metar/karte/refresh.sh
+*/5 22 * * *     /home/metar/karte/lightsoff.sh

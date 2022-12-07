@@ -7,15 +7,16 @@ import neopixel
 import time
 import datetime
 import logging
+import requests
 
-logging.basicConfig(filename='/home/pi/karte/debug.log', encoding='utf-8', level=logging.DEBUG, force=True)
+logging.basicConfig(filename='/home/metar/karte/debug.log', encoding='utf-8', level=logging.DEBUG, force=True)
 
 def hex_to_grb(hex_color):
     hex_color = hex_color.replace("#", "")
     grb = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
     return grb
 
-config = yaml.safe_load(open("/home/pi/config.yaml"))
+config = yaml.safe_load(open("/home/metar/config.yaml"))
 
 # version kann "gafor" oder "amerikanisch" sein
 version = config["version"]
@@ -66,9 +67,8 @@ flugplaetze = [x.strip() for x in config["flugplaetze"]]
 # METAR als XML abfragen
 url = "https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&hoursBeforeNow=5&mostRecentForEachStation=true&stationString=" + ",".join(
     [item for item in flugplaetze if item != "NULL"])
-req = urllib.request.Request(url, headers={
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36 Edg/86.0.622.69'})
-content = urllib.request.urlopen(req).read()
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36 Edg/86.0.622.69'}
+content = requests.get(url, headers=headers).text
 
 # XML parsen
 root = ET.fromstring(content)
