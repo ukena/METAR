@@ -68,7 +68,7 @@ flugplaetze = [x.strip() for x in config["flugplaetze"]]
 url = "https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&hoursBeforeNow=5&mostRecentForEachStation=true&stationString=" + ",".join(
     [item for item in flugplaetze if item != "NULL"])
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36 Edg/86.0.622.69'}
-content = requests.get(url, headers=headers).text
+content = requests.get(url, headers=headers).content
 
 # XML parsen
 parser = etree.XMLParser(recover=True)
