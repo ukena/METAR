@@ -1,6 +1,6 @@
 body{
     color: white;
-    background-color: cadetblue;
+    background-color: #0F4C75;
 }
 .text-muted {
     color: #aeb0b4 !important;
@@ -30,12 +30,28 @@ body{
 
 input[type="color" i] {
     border: none;
-    background-color: cadetblue;
+    background-color: #0F4C75;
+}
+input[type="color" i]:hover {
+    background-color: white;
 }
 
 .nav-link {
-    color: darkviolet;
+    color: #BBE1FA;
     font-weight: 500;
+}
+
+.alert {
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    color: #BBE1FA;
+    font-weight: 900;
+}
+
+.nav-link.active {
+    font-weight: 900;
 }
 
 .form-row {
@@ -44,4 +60,13 @@ input[type="color" i] {
 
 .form-control:disabled {
     cursor: not-allowed;
+}
+
+.textarea-height {
+    height: auto;
+    width: 100%;
+}
+
+.btn-full {
+    width: 100%;
 }

@@ -1,5 +1,3 @@
-version: 'gafor'
-helligkeit: '0.5'
 farben_amerikanisch:
   blitze-amerikanisch: '#ffffff'
   hoher_wind: '#ffff00'
@@ -23,102 +21,104 @@ farben_gafor:
   oscar_bei_wind: '#195700'
   xray: '#c90000'
   xray_bei_wind: '#640000'
+flugplaetze:
+- LOXZ
+- 'NULL'
+- LOWL
+- LOWS
+- EDDM
+- EDMO
+- LOWI
+- ETHA
+- ETSL
+- ETSI
+- ETIH
+- ETIC
+- LKLN
+- LKPR
+- LKKV
+- EDQM
+- EDDE
+- EDBC
+- EDDP
+- EDAC
+- EDDC
+- ETSH
+- EDDB
+- 'NULL'
+- EPSC
+- EDAH
+- 'NULL'
+- ETNL
+- EDHL
+- EDHK
+- ETNH
+- 'NULL'
+- EDXW
+- 'NULL'
+- EDDH
+- EDHI
+- ETMN
+- ETNT
+- EDWE
+- EHGG
+- ETWM
+- EDDG
+- ETND
+- EDDW
+- ETHS
+- EDVE
+- ETHC
+- EDDV
+- ETNW
+- ETHB
+- EDVK
+- ETHF
+- EDLP
+- EDLW
+- EDDL
+- EDLV
+- EDLN
+- ETNG
+- ETNN
+- EDDK
+- EDGS
+- EDDF
+- ETOU
+- EDFH
+- ETSB
+- ETAD
+- ELLX
+- ETEK
+- EDDR
+- ETAR
+- EDFM
+- EDTY
+- ETHN
+- ETIK
+- ETEB
+- EDDN
+- ETSN
+- EDMA
+- EDJA
+- EDNY
+- ETHL
+- EDDS
+- EDSB
+- EDTL
+- LSZH
+- LFSB
+- LSZB
+helligkeit: '0.50'
+version: amerikanisch
 wind:
-  frequenz: '1'
-  hoch: '25'
-  normal: '15'
+  frequenz: 1
+  hoch: 25
+  normal: 15
 wlan:
-  passwort: '0123456789'
+  passwort: ''
   ssid: FRITZ!Box 7590 TN
 zeiten:
-  an: '8'
-  aus: '22'
-  dauerbetrieb: 'off'
-flugplaetze:
-  - "LOXZ"
-  - "NULL"
-  - "LOWL"
-  - "LOWS"
-  - "EDDM"
-  - "EDMO"
-  - "LOWI"
-  - "ETHA"
-  - "ETSL"
-  - "ETSI"
-  - "ETIH"
-  - "ETIC"
-  - "LKLN"
-  - "LKPR"
-  - "LKKV"
-  - "EDQM"
-  - "EDDE"
-  - "EDBC"
-  - "EDDP"
-  - "EDAC"
-  - "EDDC"
-  - "ETSH"
-  - "EDDB"
-  - "NULL"
-  - "EPSC"
-  - "EDAH"
-  - "NULL"
-  - "ETNL"
-  - "EDHL"
-  - "EDHK"
-  - "ETNH"
-  - "NULL"
-  - "EDXW"
-  - "NULL"
-  - "EDDH"
-  - "EDHI"
-  - "ETMN"
-  - "ETNT"
-  - "EDWE"
-  - "EHGG"
-  - "ETWM"
-  - "EDDG"
-  - "ETND"
-  - "EDDW"
-  - "ETHS"
-  - "EDVE"
-  - "ETHC"
-  - "EDDV"
-  - "ETNW"
-  - "ETHB"
-  - "EDVK"
-  - "ETHF"
-  - "EDLP"
-  - "EDLW"
-  - "EDDL"
-  - "EDLV"
-  - "EDLN"
-  - "ETNG"
-  - "ETNN"
-  - "EDDK"
-  - "EDGS"
-  - "EDDF"
-  - "ETOU"
-  - "EDFH"
-  - "ETSB"
-  - "ETAD"
-  - "ELLX"
-  - "ETEK"
-  - "EDDR"
-  - "ETAR"
-  - "EDFM"
-  - "EDTY"
-  - "ETHN"
-  - "ETIK"
-  - "ETEB"
-  - "EDDN"
-  - "ETSN"
-  - "EDMA"
-  - "EDJA"
-  - "EDNY"
-  - "ETHL"
-  - "EDDS"
-  - "EDSB"
-  - "EDTL"
-  - "LSZH"
-  - "LFSB"
-  - "LSZB"
+  an: 8
+  aus: 22
+  dauerbetrieb: y

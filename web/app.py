@@ -1,9 +1,9 @@
 import subprocess
 from flask import Flask, render_template, request
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, BooleanField, RadioField, TextAreaField, SelectField, DecimalRangeField
+from wtforms import StringField, SubmitField, PasswordField, BooleanField, RadioField, TextAreaField, SelectField, DecimalRangeField, IntegerField
 from wtforms.widgets.core import ColorInput
-from wtforms.validators import DataRequired, Length, NumberRange
+from wtforms.validators import InputRequired, NumberRange, AnyOf, ValidationError, EqualTo
 import yaml
 import logging
 import git
@@ -18,31 +18,64 @@ logging.basicConfig(filename="/home/metar/web/debug.log" if PI else "debug.log",
 FARBEN_AMERIKANISCH = ("vfr", "vfr_bei_wind", "mvfr", "mvfr_bei_wind", "ifr", "ifr_bei_wind", "lifr", "lifr_bei_wind", "blitze-amerikanisch", "hoher_wind")
 FARBEN_GAFOR = ("charlie", "charlie_bei_wind", "oscar", "oscar_bei_wind", "delta", "delta_bei_wind", "mike", "mike_bei_wind", "xray", "xray_bei_wind", "blitze-gafor")
 
+
+class KleinerAls(object):
+    def __init__(self, anderes_feld, message, versionscheck=False):
+        self.anderes_feld = anderes_feld
+        self.message = message
+        self.versionscheck = versionscheck
+
+    def __call__(self, form, eigenes_feld):
+
+        anderes_feld = form[self.anderes_feld]
+
+        # Wenn die Version GAFOR ist, dann ist es egal, ob der Wind kleiner als der hohe Wind ist, weil es sowieso nur eine Windanzeige gibt
+        if self.versionscheck and form["form_version"].data == "gafor" and anderes_feld.data < eigenes_feld.data:
+            print(f"mit version {form['form_version'].data}")
+            pass
+        elif anderes_feld.data < eigenes_feld.data:
+            raise ValidationError(self.message)
+
+
+kleiner_als = KleinerAls
+
+
 class Einstellungen(FlaskForm):
+    class Meta:
+        csrf = False
+
     style = {"class": "form-control"}
 
-    form_ssid = StringField("Name (z.B. FRITZ!Box 7590 TN)", validators=[DataRequired(), Length(min=1, max=128)], render_kw=style)
-    form_passwort = PasswordField("Passwort", validators=[DataRequired(), Length(min=1, max=256)], render_kw=style)
-    form_version = RadioField("Version", validators=[DataRequired()], choices=[("amerikanisch", "Amerikanisch"), ("gafor", "GAFOR")], default="gafor")
+    form_ssid = StringField("Name (z.B. FRITZ!Box 7590 TN)", validators=[InputRequired(message="Es wird zwingend der WLAN Name benötigt.")], render_kw=style)
+    form_passwort = PasswordField("Passwort", validators=[InputRequired(message="Es wird zwingend ein WLAN Passwort benötigt.")], render_kw=style)
+    form_version = SelectField("Version", validators=[InputRequired(message="Die Version Deiner Karte muss \"Amerikanisch\" oder \"GAFOR\" sein.")], choices=[("amerikanisch", "Amerikanisch"), ("gafor", "GAFOR")], render_kw=style)
 
     for farbe in FARBEN_AMERIKANISCH:
-        locals()["form_" + farbe] = StringField(farbe.replace("_", " "), widget=ColorInput(), validators=[DataRequired()], render_kw=style)
+        locals()["form_" + farbe] = StringField(farbe.replace("_", " ").replace("-amerikanisch", ""), widget=ColorInput(), validators=[InputRequired(message=f'Die Farbe für {farbe.replace("_", " ").replace("-amerikanisch", "")} fehlt.')], render_kw=style)
     for farbe in FARBEN_GAFOR:
-        locals()["form_" + farbe] = StringField(farbe.replace("_", " "), widget=ColorInput(), validators=[DataRequired()], render_kw=style)
+        locals()["form_" + farbe] = StringField(farbe.replace("_", " ").replace("-gafor", ""), widget=ColorInput(), validators=[InputRequired(message=f'Die Farbe für {farbe.replace("_", " ").replace("-amerikanisch", "")} fehlt.')], render_kw=style)
 
-    form_helligkeit = DecimalRangeField("Helligkeit", validators=[DataRequired()], default=0.5, render_kw=style)
+    form_helligkeit = DecimalRangeField("Helligkeit", validators=[InputRequired(message="Ein Wert für die Helligkeit muss angegeben werden."),
+                                                                  NumberRange(min=0.1, max=1, message="Die Helligkeit muss zwischen 0,1 und 1 liegen.")], default=0.5, render_kw=style)
 
-    form_normal = StringField("normal", validators=[DataRequired(), NumberRange(1, 15)], render_kw=style)
-    form_hoch = StringField("hoch", validators=[DataRequired()], render_kw=style)
-    form_frequenz = StringField("Frequenz", validators=[DataRequired()], render_kw=style)
+    form_normal = IntegerField("Wind", validators=[InputRequired(message="Die Windgeschwindigkeit muss angegeben werden."),
+                                                   NumberRange(min=1, max=60, message="Die Windgeschwindigkeit muss zwischen 1 und 60 Knoten liegen."),
+                                                   kleiner_als("form_hoch", versionscheck=True, message="Die Windgeschwindigkeit zum Anzeigen von Wind muss kleiner sein als die von hohen Wind.")], render_kw=style)
+    form_hoch = IntegerField("Hoher Wind", validators=[InputRequired(message="Die Windgeschwindigkeit für hohen Wind muss angegeben werden."),
+                                                       NumberRange(min=1, max=60, message="Die Windgeschwindigkeit muss zwischen 1 und 60 Knoten liegen.")], render_kw=style)
+    form_frequenz = IntegerField("Frequenz", validators=[InputRequired(message="Die Frequenz des Blinkens muss angegeben werden."),
+                                                         NumberRange(min=1, max=30, message="Die Frequenz des Blinkens muss zwischen 1 und 30 Sekunden liegen.")], render_kw=style)
 
-    form_an = StringField("an", validators=[DataRequired()], render_kw=style)
-    form_aus = StringField("aus", validators=[DataRequired()], render_kw=style)
-    form_dauerbetrieb = BooleanField("Dauerbetrieb", validators=[DataRequired()])
+    form_an = IntegerField("Einschalten", validators=[InputRequired(message="Selbst wenn der Dauerbetrieb aktiv ist muss eine Zeit zum Einschalten gegeben werden."),
+                                                      NumberRange(min=0, max=24),
+                                                      kleiner_als("form_aus", message="Die Uhrzeit zum Einschalten muss kleiner sein als die zum Ausschalten.")], render_kw=style)
+    form_aus = IntegerField("Ausschalten", validators=[InputRequired(message="Selbst wenn der Dauerbetrieb aktiv ist muss eine Zeit zum Ausschalten gegeben werden."),
+                                                       NumberRange(min=0, max=24)], render_kw=style)
+    form_dauerbetrieb = BooleanField("Dauerbetrieb")
 
-    form_flugplaetze = TextAreaField("Flugplätze", validators=[DataRequired()], render_kw=style)
+    form_flugplaetze = TextAreaField("Flugplätze", validators=[InputRequired(message="Die Liste der Flugplätze kann nicht leer sein.")], render_kw=style)
 
-    form_update = SelectField("Update", choices=[("kein update", "kein update"), ("master", "master"), ("dev", "dev")], default="kein update", render_kw=style)
+    form_update = SelectField("Update", validators=[InputRequired(message="Es muss angegeben werden, ob ein update gewünscht ist und wenn ja aus welcher Branch.")], choices=[("kein update", "kein update"), ("master", "master"), ("dev", "dev")], default="kein update", render_kw=style)
 
     submit = SubmitField("Speichern")
 
@@ -55,41 +88,69 @@ def index():
     with open("/home/metar/config_default.yaml" if PI else "config_default.yaml") as f:
         standard = yaml.safe_load(f)
 
+    # Einstellungsformular instanziieren
+    form = Einstellungen()
+
+    # nur beim ersten Laden der Seite ausführen, sonst werden Formulardaten bei jedem invaliden submit überschrieben
+    if not form.is_submitted():
+        # WLAN Daten ausfüllen
+        form.form_ssid.data = config["wlan"]["ssid"]
+        form.form_passwort.data = config["wlan"]["passwort"]
+        # Version ausfüllen
+        form.form_version.data = config["version"]
+        # GAFOR Farben ausfüllen
+        for farbe in FARBEN_GAFOR:
+            form["form_" + farbe].data = config["farben_gafor"][farbe]
+        # Amerikanische Farben ausfüllen
+        for farbe in FARBEN_AMERIKANISCH:
+            form["form_" + farbe].data = config["farben_amerikanisch"][farbe]
+        # Wind ausfüllen
+        form.form_normal.data = int(config["wind"]["normal"])
+        form.form_hoch.data = int(config["wind"]["hoch"])
+        form.form_frequenz.data = int(config["wind"]["frequenz"])
+        # Zeiten ausfüllen
+        form.form_an.data = config["zeiten"]["an"]
+        form.form_aus.data = config["zeiten"]["aus"]
+        form.form_dauerbetrieb.data = config["zeiten"]["dauerbetrieb"]
+        # Flugplätze ausfüllen
+        form.form_flugplaetze.data = "\r".join(config["flugplaetze"])
+
     # wenn Formular abgeschickt wurde
-    if request.method == "POST":
+    # if request.method == "POST":
+    if form.validate_on_submit():
         # WLAN Konfiguration
-        logging.debug(f"WLAN {request.form['form_ssid']} {request.form['passwort']}")
-        config["wlan"]["ssid"] = request.form["ssid"]
-        config["wlan"]["passwort"] = request.form["passwort"]
+        logging.debug(f"WLAN {request.form['form_ssid']} {request.form['form_passwort']}")
+        config["wlan"]["ssid"] = request.form["form_ssid"]
+        config["wlan"]["passwort"] = request.form["form_passwort"]
         # Version
-        logging.debug(f"Version {request.form['version']}")
-        config["version"] = request.form["version"]
+        logging.debug(f"Version {request.form['form_version']}")
+        config["version"] = request.form["form_version"]
         # Helligkeit
-        logging.debug(f"Helligkeit {request.form['helligkeit']}")
-        config["helligkeit"] = request.form["helligkeit"]
+        logging.debug(f"Helligkeit {request.form['form_helligkeit']}")
+        config["helligkeit"] = request.form["form_helligkeit"]
         # Farben Amerikanisch
         for key in FARBEN_AMERIKANISCH:
-            config["farben_amerikanisch"][key] = request.form[key]
+            config["farben_amerikanisch"][key] = request.form[f"form_{key}"]
         # Farben GAFOR
         for key in FARBEN_GAFOR:
-            config["farben_gafor"][key] = request.form[key]
+            config["farben_gafor"][key] = request.form[f"form_{key}"]
         # Wind
-        config["wind"]["normal"] = request.form.get("normal", "15")
-        config["wind"]["hoch"] = request.form.get("hoch", "25")
-        config["wind"]["frequenz"] = request.form.get("frequenz", "1")
+        config["wind"]["normal"] = request.form.get("form_normal", "15")
+        config["wind"]["hoch"] = request.form.get("form_hoch", "25")
+        config["wind"]["frequenz"] = request.form.get("form_frequenz", "1")
         # Zeiten
-        config["zeiten"]["an"] = request.form.get("an", "8")
-        config["zeiten"]["aus"] = request.form.get("aus", "22")
-        config["zeiten"]["dauerbetrieb"] = request.form.get("dauerbetrieb", False)
+        config["zeiten"]["an"] = request.form.get("form_an", "8")
+        config["zeiten"]["aus"] = request.form.get("form_aus", "22")
+        config["zeiten"]["dauerbetrieb"] = request.form.get("form_dauerbetrieb", False)
         # Flugplätze
-        config["flugplaetze"] = [i.strip() for i in request.form["flugplaetze"].split("\r")]
+        config["flugplaetze"] = [i.strip() for i in request.form["form_flugplaetze"].split("\r")]
         # Update
-        if request.form["update-branch"] in ("master", "dev"):
-            logging.debug(f"git reset auf branch {request.form['update-branch']}")
+        if request.form["form_update"] in ("master", "dev"):
+            logging.debug(f"git reset auf branch {request.form['form_update']}")
             # repo auf den Stand des remote branches bringen
             g = git.cmd.Git("/home/metar")
             g.fetch("--all")
-            g.reset("--hard", f"origin/{request.form['update-branch']}")
+            g.reset("--hard", f"origin/{request.form['form_update']}")
             # Permissions updaten, damit cron funktioniert und alle Skripte ausführbar sind
             subprocess.call(["sudo", "chmod", "+x", "/home/metar/handle_permissions.sh"])
             subprocess.call(["sudo", "/home/metar/handle_permissions.sh"])
@@ -124,31 +185,8 @@ def index():
             subprocess.call(["wpa_cli", "-i", "wlan0", "reconfigure"])
             logging.debug("wpa_cli ausgeführt")
 
-    # Einstellungsformular instanziieren
-    form = Einstellungen()
-    # WLAN Daten ausfüllen
-    form.form_ssid.data = config["wlan"]["ssid"]
-    form.form_passwort.data = config["wlan"]["passwort"]
-    # Version ausfüllen
-    form.form_version.data = config["version"]
-    # GAFOR Farben ausfüllen
-    for farbe in FARBEN_GAFOR:
-        form["form_" + farbe].data = config["farben_gafor"][farbe]
-    # Amerikanische Farben ausfüllen
-    for farbe in FARBEN_AMERIKANISCH:
-        form["form_" + farbe].data = config["farben_amerikanisch"][farbe]
-    # Wind ausfüllen
-    form.form_normal.data = config["wind"]["normal"]
-    form.form_hoch.data = config["wind"]["hoch"]
-    form.form_frequenz.data = config["wind"]["frequenz"]
-    # Zeiten ausfüllen
-    form.form_an.data = config["zeiten"]["an"]
-    form.form_aus.data = config["zeiten"]["aus"]
-    form.form_dauerbetrieb.data = config["zeiten"]["dauerbetrieb"]
-    # Flugplätze ausfüllen
-    form.form_flugplaetze.data = "\r".join(config["flugplaetze"])
-
     return render_template("index.html", config=config, standard=standard, form=form, FARBEN_AMERIKANISCH=FARBEN_AMERIKANISCH, FARBEN_GAFOR=FARBEN_GAFOR)
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=80, debug=True)

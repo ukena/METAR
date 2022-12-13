@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>METAR KARTE EINSTELLUNGEN</title>
+    <title>METARMAP Einstellungen</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,11 +12,23 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-12 col-lg-10 col-xl-8 mx-auto">
-            {% if request.method == "POST" %}
-                <div class="alert alert-dark mt-5" role="alert">
-                  Die Einstellungen wurden gespeichert und das System startet jetzt neu. Daher wird das METAR WLAN jetzt ausgeschaltet und es wird versucht, eine Verbindung mit dem eingegebenen WLAN herzustellen. Sollte das nicht klappen, dann wird das METAR WLAN in ca. 2 Minuten wieder aktiv und du kannst die Einstellungen nochmal anpassen.
+
+                {% if form.validate() %}
+                <div class="alert alert-info mt-5" role="alert">
+                    Die Einstellungen wurden gespeichert und das System startet jetzt neu. Daher wird das METAR WLAN jetzt ausgeschaltet und es wird versucht, eine Verbindung mit dem eingegebenen WLAN herzustellen.
                 </div>
-            {% else %}
+                {% else %}
+
+                <div class="mt-3">
+                    {% if form.is_submitted() %}
+                    {% for field, errors in form.errors.items() %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ form[field].label }}: {{ ', '.join(errors) }}
+                        </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+
                 <h5 class="h5 mb-4 mt-4">Hier kannst Du Deine METAR Karte konfigurieren und individuell einstellen. Sobald Du auf speichern klickst, startet das System mit den geänderten Einstellungen neu.</h5>
                 <div class="my-4">
                 <nav>
@@ -30,10 +42,11 @@
                         <button class="nav-link" id="update-tab" data-bs-toggle="tab" data-bs-target="#update" type="button" role="tab" aria-controls="update" aria-selected="false">Update</button>
                     </div>
                 </nav>
-                <form id="einstellungen" method="POST" action="/">
+                <form id="einstellungen" method="POST" action="" novalidate>
+
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="wlan" role="tabpanel" aria-labelledby="wlan">
-                            <div class="alert alert-danger mt-3" role="alert">
+                            <div class="alert alert-info mt-3" role="alert">
                               Die METAR Karte benötigt zwingend eine WLAN-Verbindung, um die neusten Wetterinformationen abzurufen. Bitte gib daher hier Deine WLAN-Daten ein. Wenn Du auf speichern klickst und das System neu startet, dann versucht es sich mit dem hier eingestellten WLAN zu verbinden. Wenn es das nicht kann, dann wird nach einiger Zeit automatisch wieder der Hotspot aktiviert und Du kannst die Einstellung hier nochmal ändern.
                             </div>
                             <div class="form-group col-12 mt-2">
@@ -46,12 +59,12 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="version" role="tabpanel" aria-labelledby="version">
-                            <div class="alert alert-danger mt-3" role="alert">
+                            <div class="alert alert-info mt-3" role="alert">
                               Hier kannst Du einstellen, ob Du die GAFOR oder die amerikanische Version der Karte hast. Dadurch kannst Du Dich auch jederzeit für die andere Version entscheiden. Die Auswahl hier hat Auswirkungen auf die verfügbaren Einstellungen im Tab Farben und Wind.
                             </div>
                             <div class="form-group col-12 mt-2">
                                 {{ form.form_version.label }}
-                                {{ form.form_version() }}
+                                {{ form.form_version(**{"onchange": "handleVersion()"}) }}
                             </div>
                         </div>
                         <div class="tab-pane fade" id="farben" role="tabpanel" aria-labelledby="farben">
@@ -64,7 +77,7 @@
                                         </div>
                                     {% endfor %}
                                 </div>
-                                <div id="farben-amerikanisch" style="display: none;">
+                                <div id="farben-amerikanisch">
                                     {% for ind in FARBEN_AMERIKANISCH %}
                                         <div class="form-group col-6 mt-2 p-2">
                                             {{ form.__dict__["form_" + ind].label }}
@@ -84,7 +97,7 @@
                                 {{ form.form_normal.label }}
                                 {{ form.form_normal() }}
                             </div>
-                            <div class="form-group col-12 mt-2" id="hoch-wrapper" style="display: none">
+                            <div class="form-group col-12 mt-2" id="hoch-wrapper">
                                 {{ form.form_hoch.label }}
                                 {{ form.form_hoch() }}
                             </div>
@@ -108,32 +121,37 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="flugplaetze" role="tabpanel" aria-labelledby="flugplaetze">
-                            <div class="alert alert-danger mt-3" role="alert">
+                            <div class="alert alert-info mt-3" role="alert">
                               Über diese Liste kann die Reihenfolge der Flugplätze festgelegt werden. Am besten Du lässt die Liste so wie sie ist. Nur falls Du z.B. einen Flugplatz nicht anzeigen lassen möchtest, dann kannst Du ihn durch "NULL" ersetzen. Allgemein kannst Du hier aber viel kaputt machen: Wenn Du z.B. einen Flugplatz hinzufügst dann verschieben sich alle Flugplätze um 1 und die LEDs leuchten womöglich nicht mehr an der richtigen Stelle. "NULL" bedeutet, dass die jeweilige LED am Strang nicht leuchtet.<br>An einigen Stellen steht schon "NULL", weil der LED Strang alle 5cm eine LED hat, die Bohrungen aber weiter auseinanderliegen und daher manche LEDs nicht leuchten sollen.
                             </div>
                             <div class="form-group col-12 mt-2">
                                 {{ form.form_flugplaetze.label }}
-                                {{ form.form_flugplaetze(rows="30") }}
+                                {{ form.form_flugplaetze(rows=config.flugplaetze | length, class_="textarea-height") }}
                             </div>
                         </div>
                         <div class="tab-pane fade" id="update" role="tabpanel" aria-labelledby="update">
-                            <div class="alert alert-danger mt-3" role="alert">
+                            <div class="alert alert-info mt-3" role="alert">
                               Am besten Du lässt "kein Update" stehen, wenn alles funktioniert. Generell solltest Du hier nur etwas machen, wenn es bei Dir Probleme gibt und ich Dir den korrekten Branch genannt habe.<br>Die Idee hinter dieser Einstellungsmöglichkeit ist nur, dass Du mich bei Problemen in der Software kontaktierst, ich das Problem löse, Dir den branch nenne und dann kannst Du hier die neue Version herunterladen.
                             </div>
                             <div class="form-group col-12 mt-2">
-                                <label for="update-branch">Branch</label>
-                                <select class="form-control" id="update-branch" name="update-branch">
-                                    <option selected="selected">kein Update</option>
-                                    <option value="master">master</option>
-                                    <option value="dev">dev</option>
-                                </select>
+                                {{ form.form_update.label }}
+                                {{ form.form_update() }}
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <button type="reset" class="btn btn-primary mt-4">Einstellungen zurücksetzen</button>
-                        <button type="button" class="btn btn-secondary mt-4" id="standard">Einstellungen auf Standardwerte zurücksetzen</button>
-                        <button type="submit" class="btn btn-success mt-4">Speichern und Neustart</button>
+
+                    <div class="container text-center">
+                      <div class="row">
+                        <div class="col-sm-4">
+                            <button type="reset" class="btn btn-primary btn-full mt-4">Einstellungen zurücksetzen</button>
+                        </div>
+                        <div class="col-sm-4">
+                            <button type="button" class="btn btn-secondary btn-full mt-4" id="standard">Einstellungen auf Standardwerte zurücksetzen</button>
+                        </div>
+                        <div class="col-sm-4">
+                            <button type="submit" class="btn btn-success btn-full mt-4">Speichern und Neustart</button>
+                        </div>
+                      </div>
                     </div>
                 </form>
             </div>
@@ -150,17 +168,17 @@
 
     button.addEventListener("click", function () {
         // Version auf GAFOR setzen
-        let version = formular.elements["form_version"][0];
-        version.checked = true;
-        handleVersion(version);
+        let version = formular.elements["form_version"];
+        version.value = "{{ standard.version }}";
+        handleVersion();
 
         // GAFOR Farbsystem zurücksetzen
-        {% for ind in ("charlie", "charlie_bei_wind", "oscar", "oscar_bei_wind", "delta", "delta_bei_wind", "mike", "mike_bei_wind", "xray", "xray_bei_wind", "blitze-gafor") %}
+        {% for ind in FARBEN_GAFOR %}
         formular.elements["form_{{ ind }}"].value = "{{ standard.farben_gafor[ind] }}";
         {% endfor %}
 
         // Amerikanisches Farbsystem zurücksetzen
-        {% for ind in ("vfr", "vfr_bei_wind", "mvfr", "mvfr_bei_wind", "ifr", "ifr_bei_wind", "lifr", "lifr_bei_wind", "blitze-amerikanisch", "hoher_wind") %}
+        {% for ind in FARBEN_AMERIKANISCH %}
         formular.elements["form_{{ ind }}"].value = "{{ standard.farben_amerikanisch[ind] }}";
         {% endfor %}
 
@@ -216,20 +234,19 @@
 <script src="{{ url_for('static', filename='js/bootstrap.bundle.js') }}"></script>
 <script>
 
-    function handleVersion(e) {
+    function handleVersion() {
+        var e = formular.elements["form_version"];
         var farbenGAFOR = document.getElementById("farben-gafor");
         var farbenAmerikanisch = document.getElementById("farben-amerikanisch");
         var hoherWind = document.getElementById("hoch-wrapper");
 
-        console.log(e)
-
-        if (e.value === "Gafor") {
+        if (e.value === "gafor") {
 
             farbenGAFOR.style.display = "initial";
             farbenAmerikanisch.style.display = "none";
             hoherWind.style.display = "none";
 
-        } else if (e.value === "Amerikanisch") {
+        } else if (e.value === "amerikanisch") {
             farbenAmerikanisch.style.display = "initial";
             farbenGAFOR.style.display = "none";
             hoherWind.style.display = "initial";
@@ -250,5 +267,9 @@
         document.getElementById("form_aus").disabled = false;
       }
     }
+</script>
+<script>
+    handleVersion();
+    handleZeiten();
 </script>
 </html>

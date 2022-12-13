@@ -1,5 +1,5 @@
 version: 'gafor'
-helligkeit: '0.5'
+helligkeit: 0.5
 farben_amerikanisch:
   blitze-amerikanisch: '#ffffff'
   hoher_wind: '#ffff00'
@@ -24,16 +24,16 @@ farben_gafor:
   xray: '#c90000'
   xray_bei_wind: '#640000'
 wind:
-  frequenz: '1'
-  hoch: '25'
-  normal: '15'
+  frequenz: 1
+  hoch: 25
+  normal: 15
 wlan:
-  passwort: '0123456789'
-  ssid: FRITZ!Box 7590 TN
+  passwort: ''
+  ssid: ''
 zeiten:
-  an: '8'
-  aus: '22'
-  dauerbetrieb: 'off'
+  an: 8
+  aus: 22
+  dauerbetrieb: n
 flugplaetze:
   - "LOXZ"
   - "NULL"
