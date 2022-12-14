@@ -167,7 +167,6 @@ def index():
                 repo.git.reset("--hard")
                 repo.heads[branch].checkout()
                 repo.git.reset("--hard")
-                repo.git.clean("-xdf")
                 repo.remotes.origin.pull()
 
                 # Permissions updaten, damit cron funktioniert und alle Skripte ausführbar sind
