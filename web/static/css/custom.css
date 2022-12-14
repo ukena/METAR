@@ -70,3 +70,8 @@ input[type="color" i]:hover {
 .btn-full {
     width: 100%;
 }
+
+input[readonly] {
+    background-color: lightgray;
+    pointer-events: none;
+}

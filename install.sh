@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # Vorher # # # # # # # # # # # # # # # # #
 # sudo apt update
 # sudo apt upgrade -y
 # sudo apt install -y git

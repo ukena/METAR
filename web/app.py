@@ -1,9 +1,11 @@
+import os
 import subprocess
 from flask import Flask, render_template, request
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, BooleanField, RadioField, TextAreaField, SelectField, DecimalRangeField, IntegerField
+from wtforms import StringField, SubmitField, BooleanField, RadioField, TextAreaField, SelectField, DecimalRangeField, IntegerField
 from wtforms.widgets.core import ColorInput
 from wtforms.validators import InputRequired, NumberRange, AnyOf, ValidationError, EqualTo
+from wtforms.widgets import PasswordInput
 import yaml
 import logging
 import git
@@ -13,7 +15,8 @@ app.config["SECRET_KEY"] = "GFvKeDNdZ5HVD93CRLWUHZya3f63tFKO"
 
 # zum debuggen, wenn lokal dann False, in Production True
 PI = False
-logging.basicConfig(filename="/home/metar/web/debug.log" if PI else "debug.log", encoding="utf-8", level=logging.DEBUG, force=True)
+BASE_DIR = "/home/metar" if PI else os.getcwd()
+logging.basicConfig(filename=f"{BASE_DIR}/web/debug.log" if PI else "debug.log", encoding="utf-8", level=logging.DEBUG, force=True)
 
 FARBEN_AMERIKANISCH = ("vfr", "vfr_bei_wind", "mvfr", "mvfr_bei_wind", "ifr", "ifr_bei_wind", "lifr", "lifr_bei_wind", "blitze-amerikanisch", "hoher_wind")
 FARBEN_GAFOR = ("charlie", "charlie_bei_wind", "oscar", "oscar_bei_wind", "delta", "delta_bei_wind", "mike", "mike_bei_wind", "xray", "xray_bei_wind", "blitze-gafor")
@@ -47,7 +50,7 @@ class Einstellungen(FlaskForm):
     style = {"class": "form-control"}
 
     form_ssid = StringField("Name (z.B. FRITZ!Box 7590 TN)", validators=[InputRequired(message="Es wird zwingend der WLAN Name benötigt.")], render_kw=style)
-    form_passwort = PasswordField("Passwort", validators=[InputRequired(message="Es wird zwingend ein WLAN Passwort benötigt.")], render_kw=style)
+    form_passwort = StringField("Passwort", widget=PasswordInput(hide_value=False), validators=[InputRequired(message="Es wird zwingend ein WLAN Passwort benötigt.")], render_kw=style)
     form_version = SelectField("Version", validators=[InputRequired(message="Die Version Deiner Karte muss \"Amerikanisch\" oder \"GAFOR\" sein.")], choices=[("amerikanisch", "Amerikanisch"), ("gafor", "GAFOR")], render_kw=style)
 
     for farbe in FARBEN_AMERIKANISCH:
@@ -75,18 +78,18 @@ class Einstellungen(FlaskForm):
 
     form_flugplaetze = TextAreaField("Flugplätze", validators=[InputRequired(message="Die Liste der Flugplätze kann nicht leer sein.")], render_kw=style)
 
-    form_update = SelectField("Update", validators=[InputRequired(message="Es muss angegeben werden, ob ein update gewünscht ist und wenn ja aus welcher Branch.")], choices=[("kein update", "kein update"), ("master", "master"), ("dev", "dev")], default="kein update", render_kw=style)
+    form_update = SelectField("Update", validators=[InputRequired(message="Es muss angegeben werden, ob ein update gewünscht ist und wenn ja aus welcher Branch.")], choices=[("kein update", "kein update"), ("main", "main"), ("dev", "dev"), ("experimentell", "experimentell")], default="kein update", render_kw=style)
 
     submit = SubmitField("Speichern")
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     # aktuelle Konfiguration auslesen
-    with open("/home/metar/config.yaml" if PI else "config.yaml") as f:
-        config = yaml.safe_load(f)
+    with open(f"{BASE_DIR}/config.yaml" if PI else "config.yaml") as f:
+        config = yaml.load(f, Loader=yaml.FullLoader)
     # Standardeinstellungen auslesen
-    with open("/home/metar/config_default.yaml" if PI else "config_default.yaml") as f:
-        standard = yaml.safe_load(f)
+    with open(f"{BASE_DIR}/config_default.yaml" if PI else "config_default.yaml") as f:
+        standard = yaml.load(f, Loader=yaml.FullLoader)
 
     # Einstellungsformular instanziieren
     form = Einstellungen()
@@ -109,9 +112,9 @@ def index():
         form.form_hoch.data = int(config["wind"]["hoch"])
         form.form_frequenz.data = int(config["wind"]["frequenz"])
         # Zeiten ausfüllen
-        form.form_an.data = config["zeiten"]["an"]
-        form.form_aus.data = config["zeiten"]["aus"]
-        form.form_dauerbetrieb.data = config["zeiten"]["dauerbetrieb"]
+        form.form_an.data = int(config["zeiten"]["an"])
+        form.form_aus.data = int(config["zeiten"]["aus"])
+        form.form_dauerbetrieb.checked = True if config["zeiten"]["dauerbetrieb"] == "true" else False
         # Flugplätze ausfüllen
         form.form_flugplaetze.data = "\r".join(config["flugplaetze"])
 
@@ -135,46 +138,62 @@ def index():
         for key in FARBEN_GAFOR:
             config["farben_gafor"][key] = request.form[f"form_{key}"]
         # Wind
-        config["wind"]["normal"] = request.form.get("form_normal", "15")
-        config["wind"]["hoch"] = request.form.get("form_hoch", "25")
-        config["wind"]["frequenz"] = request.form.get("form_frequenz", "1")
+        config["wind"]["normal"] = request.form.get("form_normal", 15)
+        config["wind"]["hoch"] = request.form.get("form_hoch", 25)
+        config["wind"]["frequenz"] = request.form.get("form_frequenz", 1)
         # Zeiten
-        config["zeiten"]["an"] = request.form.get("form_an", "8")
-        config["zeiten"]["aus"] = request.form.get("form_aus", "22")
-        config["zeiten"]["dauerbetrieb"] = request.form.get("form_dauerbetrieb", False)
+        config["zeiten"]["an"] = request.form.get("form_an", 8)
+        config["zeiten"]["aus"] = request.form.get("form_aus", 22)
+        dauerbetrieb = request.form.get("form_dauerbetrieb", False)  # wenn nicht checked dann wird es nicht submitted
+        config["zeiten"]["dauerbetrieb"] = "true" if dauerbetrieb else "false"
         # Flugplätze
         config["flugplaetze"] = [i.strip() for i in request.form["form_flugplaetze"].split("\r")]
         # Update
-        if request.form["form_update"] in ("master", "dev"):
-            logging.debug(f"git reset auf branch {request.form['form_update']}")
-            # repo auf den Stand des remote branches bringen
-            g = git.cmd.Git("/home/metar")
-            g.fetch("--all")
-            g.reset("--hard", f"origin/{request.form['form_update']}")
-            # Permissions updaten, damit cron funktioniert und alle Skripte ausführbar sind
-            subprocess.call(["sudo", "chmod", "+x", "/home/metar/handle_permissions.sh"])
-            subprocess.call(["sudo", "/home/metar/handle_permissions.sh"])
+        if request.form["form_update"] in ("main", "dev", "experimentell"):
+            branch = None
+            if request.form["form_update"] == "main":
+                branch = "master"
+            elif request.form["form_update"] == "dev":
+                branch = "dev"
+            elif request.form["form_update"] == "experimentell":
+                branch = "experimentell"
+
+            if branch:
+                logging.debug(f"git reset auf branch {branch}")
+
+                # repo auf den Stand des remote branches bringen
+                repo = git.Repo(BASE_DIR)
+                repo.remotes.origin.fetch()
+                repo.git.reset("--hard")
+                repo.heads[branch].checkout()
+                repo.git.reset("--hard")
+                repo.git.clean("-xdf")
+                repo.remotes.origin.pull()
+
+                # Permissions updaten, damit cron funktioniert und alle Skripte ausführbar sind
+                subprocess.call(["sudo", "chmod", "+x", f"{BASE_DIR}/handle_permissions.sh"])
+                subprocess.call(["sudo", f"{BASE_DIR}/handle_permissions.sh"])
 
         # neue config parsen
-        with open("/home/metar/config.yaml" if PI else "config.yaml", "w") as f:
+        with open(f"{BASE_DIR}/config.yaml" if PI else "config.yaml", "w") as f:
             yaml.dump(config, f)
 
         if PI:
             if config["zeiten"]["dauerbetrieb"]:
                 # Dauerbetrieb ist aktiv → cronjob anpassen, damit lightsoff.sh nicht ausgeführt wird
-                with open("/home/metar/karte/crontab", "w+") as f:
-                    cron_an = "*/5 * * * *  /home/metar/karte/refresh.sh"
+                with open(f"{BASE_DIR}/karte/crontab", "w+") as f:
+                    cron_an = f"*/5 * * * *  {BASE_DIR}/karte/refresh.sh"
                     f.write(cron_an + "\n")
-                subprocess.call(["sudo", "crontab", "/home/metar/karte/crontab", "-"])
+                subprocess.call(["sudo", "crontab", f"{BASE_DIR}/karte/crontab", "-"])
                 logging.debug(f"cronjob angepasst: {cron_an}")
             else:
                 # Dauerbetrieb ist aus → Zeiten in crontab schreiben
-                with open("/home/metar/karte/crontab", "w+") as f:
-                    cron_an = f"*/5 {config['zeiten']['an']}-{int(config['zeiten']['aus']) - 1} * * *  /home/metar/karte/refresh.sh"
-                    cron_aus = f"*/5 {config['zeiten']['aus']} * * *     /home/metar/karte/lightsoff.sh"
+                with open(f"{BASE_DIR}/karte/crontab", "w+") as f:
+                    cron_an = f"*/5 {config['zeiten']['an']}-{int(config['zeiten']['aus']) - 1} * * *  {BASE_DIR}/karte/refresh.sh"
+                    cron_aus = f"*/5 {config['zeiten']['aus']} * * *     {BASE_DIR}/karte/lightsoff.sh"
                     f.write(cron_an + "\n")
                     f.write(cron_aus + "\n")
-                subprocess.call(["sudo", "crontab", "/home/metar/karte/crontab", "-"])
+                subprocess.call(["sudo", "crontab", f"{BASE_DIR}/karte/crontab", "-"])
                 logging.debug(f"cronjob angepasst: {cron_an} und {cron_aus}")
 
             # WLAN Einstellungen überarbeiten

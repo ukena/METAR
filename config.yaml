@@ -109,16 +109,16 @@ flugplaetze:
 - LSZH
 - LFSB
 - LSZB
-helligkeit: '0.50'
-version: amerikanisch
+helligkeit: '0.5'
+version: gafor
 wind:
-  frequenz: 1
-  hoch: 25
-  normal: 15
+  frequenz: '1'
+  hoch: '25'
+  normal: '15'
 wlan:
-  passwort: ''
+  passwort: '1234'
   ssid: FRITZ!Box 7590 TN
 zeiten:
-  an: 8
-  aus: 22
-  dauerbetrieb: y
+  an: '8'
+  aus: '22'
+  dauerbetrieb: 'false'
