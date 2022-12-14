@@ -78,7 +78,7 @@ class Einstellungen(FlaskForm):
 
     form_flugplaetze = TextAreaField("Flugplätze", validators=[InputRequired(message="Die Liste der Flugplätze kann nicht leer sein.")], render_kw=style)
 
-    form_update = SelectField("Update", validators=[InputRequired(message="Es muss angegeben werden, ob ein update gewünscht ist und wenn ja aus welcher Branch.")], choices=[("kein update", "kein update"), ("main", "main"), ("dev", "dev"), ("experimentell", "experimentell")], default="kein update", render_kw=style)
+    form_update = SelectField("Update", validators=[InputRequired(message="Es muss angegeben werden, ob ein update gewünscht ist und wenn ja aus welcher Quelle.")], choices=[("kein update", "kein update"), ("main", "main"), ("dev", "dev"), ("hotfix", "hotfix")], default="kein update", render_kw=style)
 
     submit = SubmitField("Speichern")
 
@@ -149,14 +149,8 @@ def index():
         # Flugplätze
         config["flugplaetze"] = [i.strip() for i in request.form["form_flugplaetze"].split("\r")]
         # Update
-        if request.form["form_update"] in ("main", "dev", "experimentell"):
-            branch = None
-            if request.form["form_update"] == "main":
-                branch = "master"
-            elif request.form["form_update"] == "dev":
-                branch = "dev"
-            elif request.form["form_update"] == "experimentell":
-                branch = "experimentell"
+        if request.form["form_update"] in ("main", "dev", "hotfix"):
+            branch = "master" if request.form["form_update"] == "main" else request.form["form_update"]
 
             if branch:
                 logging.debug(f"git reset auf branch {branch}")
