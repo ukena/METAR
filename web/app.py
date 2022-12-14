@@ -164,8 +164,9 @@ def index():
                 repo.remotes.origin.pull()
 
                 # Permissions updaten, damit cron funktioniert und alle Skripte ausführbar sind
-                subprocess.call(["sudo", "chmod", "+x", f"{BASE_DIR}/handle_permissions.sh"])
-                subprocess.call(["sudo", f"{BASE_DIR}/handle_permissions.sh"])
+                if PI:
+                    subprocess.call(["sudo", "chmod", "+x", f"{BASE_DIR}/handle_permissions.sh"])
+                    subprocess.call(["sudo", f"{BASE_DIR}/handle_permissions.sh"])
 
         # neue config parsen
         with open(f"{BASE_DIR}/config.yaml" if PI else "config.yaml", "w") as f:
