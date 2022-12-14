@@ -159,6 +159,7 @@ def index():
                 repo = git.Repo(BASE_DIR)
                 repo.remotes.origin.fetch()
                 repo.git.reset("--hard")
+                repo.remotes.origin.fetch()
                 repo.heads[branch].checkout()
                 repo.git.reset("--hard")
                 repo.remotes.origin.pull()
