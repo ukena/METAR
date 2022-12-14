@@ -8,7 +8,7 @@ from wtforms.validators import InputRequired, NumberRange, AnyOf, ValidationErro
 from wtforms.widgets import PasswordInput
 import yaml
 import logging
-import git
+from git import Repo
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "GFvKeDNdZ5HVD93CRLWUHZya3f63tFKO"
@@ -156,11 +156,10 @@ def index():
                 logging.debug(f"git reset auf branch {branch}")
 
                 # repo auf den Stand des remote branches bringen
-                repo = git.Repo(BASE_DIR)
+                repo = Repo(BASE_DIR)
                 repo.remotes.origin.fetch()
                 repo.git.reset("--hard")
-                repo.remotes.origin.fetch()
-                repo.heads[branch].checkout()
+                repo.git.checkout(branch)
                 repo.git.reset("--hard")
                 repo.remotes.origin.pull()
 
