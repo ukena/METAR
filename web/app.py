@@ -14,7 +14,7 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "GFvKeDNdZ5HVD93CRLWUHZya3f63tFKO"
 
 # zum debuggen, wenn lokal dann False, in Production True
-PI = False
+PI = True
 BASE_DIR = "/home/metar" if PI else os.getcwd()
 logging.basicConfig(filename=f"{BASE_DIR}/web/debug.log" if PI else "debug.log", encoding="utf-8", level=logging.DEBUG, force=True)
 
