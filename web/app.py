@@ -8,13 +8,13 @@ from wtforms.validators import InputRequired, NumberRange, AnyOf, ValidationErro
 from wtforms.widgets import PasswordInput
 import yaml
 import logging
-import git
+from git import Repo
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "GFvKeDNdZ5HVD93CRLWUHZya3f63tFKO"
 
 # zum debuggen, wenn lokal dann False, in Production True
-PI = False
+PI = True
 BASE_DIR = "/home/metar" if PI else os.getcwd()
 logging.basicConfig(filename=f"{BASE_DIR}/web/debug.log" if PI else "debug.log", encoding="utf-8", level=logging.DEBUG, force=True)
 
@@ -78,7 +78,7 @@ class Einstellungen(FlaskForm):
 
     form_flugplaetze = TextAreaField("Flugplätze", validators=[InputRequired(message="Die Liste der Flugplätze kann nicht leer sein.")], render_kw=style)
 
-    form_update = SelectField("Update", validators=[InputRequired(message="Es muss angegeben werden, ob ein update gewünscht ist und wenn ja aus welcher Branch.")], choices=[("kein update", "kein update"), ("main", "main"), ("dev", "dev"), ("experimentell", "experimentell")], default="kein update", render_kw=style)
+    form_update = SelectField("Update", validators=[InputRequired(message="Es muss angegeben werden, ob ein update gewünscht ist und wenn ja aus welcher Quelle.")], choices=[("kein update", "kein update"), ("main", "main"), ("dev", "dev"), ("hotfix", "hotfix")], default="kein update", render_kw=style)
 
     submit = SubmitField("Speichern")
 
@@ -149,29 +149,24 @@ def index():
         # Flugplätze
         config["flugplaetze"] = [i.strip() for i in request.form["form_flugplaetze"].split("\r")]
         # Update
-        if request.form["form_update"] in ("main", "dev", "experimentell"):
-            branch = None
-            if request.form["form_update"] == "main":
-                branch = "master"
-            elif request.form["form_update"] == "dev":
-                branch = "dev"
-            elif request.form["form_update"] == "experimentell":
-                branch = "experimentell"
+        if request.form["form_update"] in ("main", "dev", "hotfix"):
+            branch = "master" if request.form["form_update"] == "main" else request.form["form_update"]
 
             if branch:
                 logging.debug(f"git reset auf branch {branch}")
 
                 # repo auf den Stand des remote branches bringen
-                repo = git.Repo(BASE_DIR)
+                repo = Repo(BASE_DIR)
                 repo.remotes.origin.fetch()
                 repo.git.reset("--hard")
-                repo.heads[branch].checkout()
+                repo.git.checkout(branch)
                 repo.git.reset("--hard")
                 repo.remotes.origin.pull()
 
                 # Permissions updaten, damit cron funktioniert und alle Skripte ausführbar sind
-                subprocess.call(["sudo", "chmod", "+x", f"{BASE_DIR}/handle_permissions.sh"])
-                subprocess.call(["sudo", f"{BASE_DIR}/handle_permissions.sh"])
+                if PI:
+                    subprocess.call(["sudo", "chmod", "+x", f"{BASE_DIR}/handle_permissions.sh"])
+                    subprocess.call(["sudo", f"{BASE_DIR}/handle_permissions.sh"])
 
         # neue config parsen
         with open(f"{BASE_DIR}/config.yaml" if PI else "config.yaml", "w") as f:

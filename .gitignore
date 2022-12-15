@@ -8,4 +8,6 @@ __pycache__
 .bash_logout
 .bashrc
 .profile
+
 log.txt
+config.yaml

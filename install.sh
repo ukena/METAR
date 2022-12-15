@@ -14,6 +14,8 @@ sudo apt install libxslt-dev -y
 # pip requirements installieren
 sudo pip3 install -r /home/metar/requirements.txt
 sudo python3 -m pip install --force-reinstall adafruit-blinka
+# config_default.yaml zu config.yaml kopieren
+cp /home/metar/config_default.yaml /home/metar/config.yaml
 # berechtigungen vergeben
 sudo chmod +x /home/metar/handle_permissions.sh
 sudo /home/metar/handle_permissions.sh

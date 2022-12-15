@@ -1,7 +1,6 @@
 from gpiozero import Button
 import subprocess
 from signal import pause
-import datetime
 
 # Button instanziieren
 button = Button(23, hold_time=3)
