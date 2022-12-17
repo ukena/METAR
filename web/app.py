@@ -199,7 +199,7 @@ def index():
                             repo.git.reset("--hard")
                             repo.git.checkout(branch)
                             repo.git.reset("--hard")
-                            repo.pull("origin", branch)
+                            repo.git.pull("origin", branch)
                             i = 6
                         except:
                             logging.exception("git reset fehlgeschlagen")
