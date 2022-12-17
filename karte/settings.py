@@ -4,20 +4,12 @@ from signal import pause
 from git import Repo
 from time import sleep
 
-# Button instanziieren
-button = Button(23, hold_time=15)
+Button.was_held = False
 
-# Funktion wird ausgeführt, wenn der Button 3 Sekunden gedrückt wird
-def load_settings():
-    # normales WLAN deaktivieren
-    subprocess.call(["wpa_cli", "-i", "wlan0", "disable_network", "0"])
+def reset_master(btn):
+    btn.was_held = True
     # LEDs ausschalten
     subprocess.call(["sudo", "/home/metar/karte/lightsoff.sh"])
-    sleep(1)
-    # normales WLAN aktivieren (Verbindung aber erst nach dem Laden der Einstellungen)
-    subprocess.call(["wpa_cli", "-i", "wlan0", "enable_network", "0"])
-
-def reset_master():
     # repo auf den Stand des remote branches bringen
     i = 0
     repo = Repo("/home/metar")
@@ -37,7 +29,25 @@ def reset_master():
     subprocess.call(["sudo", "chmod", "+x", "/home/metar/handle_permissions.sh"])
     subprocess.call(["sudo", "/home/metar/handle_permissions.sh"])
 
-button.when_pressed = load_settings
+def load_settings():
+    print("Button wurde gedrückt")
+    # normales WLAN deaktivieren
+    subprocess.call(["wpa_cli", "-i", "wlan0", "disable_network", "0"])
+    # LEDs ausschalten
+    subprocess.call(["sudo", "/home/metar/karte/lightsoff.sh"])
+    sleep(1)
+    # normales WLAN aktivieren (Verbindung aber erst nach dem Laden der Einstellungen)
+    subprocess.call(["wpa_cli", "-i", "wlan0", "enable_network", "0"])
+
+def released(btn):
+    if not btn.was_held:
+        print("Button wurde gahalten")
+        load_settings()
+    btn.was_held = False
+
+# Button instanziieren
+button = Button(23, hold_time=15)
 button.when_held = reset_master
+button.when_released = released
 
 pause()
