@@ -3,7 +3,6 @@ import subprocess
 from signal import pause
 from git import Repo
 
-# TEST
 # Button instanziieren
 button = Button(23, hold_time=15)
 
