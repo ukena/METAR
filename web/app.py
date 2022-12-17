@@ -148,31 +148,41 @@ def index():
         config["zeiten"]["dauerbetrieb"] = "true" if dauerbetrieb else "false"
         # Flugplätze
         config["flugplaetze"] = [i.strip() for i in request.form["form_flugplaetze"].split("\r")]
-        # Update
-        if request.form["form_update"] in ("main", "dev", "hotfix"):
-            branch = "master" if request.form["form_update"] == "main" else request.form["form_update"]
-
-            if branch:
-                logging.debug(f"git reset auf branch {branch}")
-
-                # repo auf den Stand des remote branches bringen
-                repo = Repo(BASE_DIR)
-                repo.remotes.origin.fetch()
-                repo.git.reset("--hard")
-                repo.git.checkout(branch)
-                repo.git.reset("--hard")
-                repo.remotes.origin.pull()
-
-                # Permissions updaten, damit cron funktioniert und alle Skripte ausführbar sind
-                if PI:
-                    subprocess.call(["sudo", "chmod", "+x", f"{BASE_DIR}/handle_permissions.sh"])
-                    subprocess.call(["sudo", f"{BASE_DIR}/handle_permissions.sh"])
 
         # neue config parsen
         with open(f"{BASE_DIR}/config.yaml" if PI else "config.yaml", "w") as f:
             yaml.dump(config, f)
 
         if PI:
+
+            # WLAN Einstellungen überarbeiten
+            subprocess.call(["wpa_cli", "-i", "wlan0", "set_network", "0", "ssid", f'{config["wlan"]["ssid"]}'])
+            subprocess.call(["wpa_cli", "-i", "wlan0", "set_network", "0", "psk", f'{config["wlan"]["passwort"]}'])
+
+            # wieder mit dem normalen WLAN verbinden
+            subprocess.call(["wpa_cli", "-i", "wlan0", "reconfigure"])
+            logging.debug("wpa_cli ausgeführt")
+
+            # Update
+            if request.form["form_update"] in ("main", "dev", "hotfix"):
+                branch = "master" if request.form["form_update"] == "main" else request.form["form_update"]
+
+                if branch:
+                    logging.debug(f"git reset auf branch {branch}")
+
+                    # repo auf den Stand des remote branches bringen
+                    repo = Repo(BASE_DIR)
+                    repo.remotes.origin.fetch()
+                    repo.git.reset("--hard")
+                    repo.git.checkout(branch)
+                    repo.git.reset("--hard")
+                    repo.remotes.origin.pull()
+
+                    # Permissions updaten, damit cron funktioniert und alle Skripte ausführbar sind
+                    if PI:
+                        subprocess.call(["sudo", "chmod", "+x", f"{BASE_DIR}/handle_permissions.sh"])
+                        subprocess.call(["sudo", f"{BASE_DIR}/handle_permissions.sh"])
+
             if config["zeiten"]["dauerbetrieb"] == "true":
                 # Dauerbetrieb ist aktiv → cronjob anpassen, damit lightsoff.sh nicht ausgeführt wird
                 with open(f"{BASE_DIR}/karte/crontab", "w+") as f:
@@ -189,14 +199,6 @@ def index():
                     f.write(cron_aus + "\n")
                 subprocess.call(["sudo", "crontab", f"{BASE_DIR}/karte/crontab", "-"])
                 logging.debug(f"cronjob angepasst: {cron_an} und {cron_aus}")
-
-            # WLAN Einstellungen überarbeiten
-            subprocess.call(["wpa_cli", "-i", "wlan0", "set_network", "0", "ssid", f'{config["wlan"]["ssid"]}'])
-            subprocess.call(["wpa_cli", "-i", "wlan0", "set_network", "0", "psk", f'{config["wlan"]["passwort"]}'])
-
-            # wieder mit dem normalen WLAN verbinden
-            subprocess.call(["wpa_cli", "-i", "wlan0", "reconfigure"])
-            logging.debug("wpa_cli ausgeführt")
 
     return render_template("index.html", config=config, standard=standard, form=form, FARBEN_AMERIKANISCH=FARBEN_AMERIKANISCH, FARBEN_GAFOR=FARBEN_GAFOR)
 
