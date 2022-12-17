@@ -3,7 +3,9 @@ import subprocess
 from signal import pause
 from git import Repo
 from time import sleep
+import logging
 
+logging.basicConfig(filename="settings-log-python.txt", encoding="utf-8", level=logging.DEBUG, force=True)
 Button.was_held = False
 
 def reset_master(btn):
@@ -30,7 +32,7 @@ def reset_master(btn):
     subprocess.call(["sudo", "/home/metar/handle_permissions.sh"])
 
 def load_settings():
-    print("Button wurde gedrückt")
+    logging.info("Button wurde gedrückt")
     # normales WLAN deaktivieren
     subprocess.call(["wpa_cli", "-i", "wlan0", "disable_network", "0"])
     # LEDs ausschalten
@@ -41,7 +43,7 @@ def load_settings():
 
 def released(btn):
     if not btn.was_held:
-        print("Button wurde gahalten")
+        logging.info("Button wurde gahalten")
         load_settings()
     btn.was_held = False
 

@@ -34,10 +34,10 @@ class KleinerAls(object):
         anderes_feld = form[self.anderes_feld]
 
         # Wenn die Version GAFOR ist, dann ist es egal, ob der Wind kleiner als der hohe Wind ist, weil es sowieso nur eine Windanzeige gibt
-        if self.versionscheck and form["form_version"].data == "gafor" and anderes_feld.data < eigenes_feld.data:
+        if self.versionscheck and form["form_version"].data == "gafor" and anderes_feld.data <= eigenes_feld.data:
             print(f"mit version {form['form_version'].data}")
             pass
-        elif anderes_feld.data < eigenes_feld.data:
+        elif anderes_feld.data <= eigenes_feld.data:
             raise ValidationError(self.message)
 
 
