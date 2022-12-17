@@ -199,17 +199,17 @@ def index():
                             repo.git.reset("--hard")
                             repo.git.checkout(branch)
                             repo.git.reset("--hard")
-                            repo.remotes.origin.pull()
+                            repo.pull("origin", branch)
                             i = 6
                         except:
                             logging.exception("git reset fehlgeschlagen")
                             sleep(10)
                             i += 1
 
-                    # Permissions updaten, damit cron funktioniert und alle Skripte ausführbar sind
-                    if PI:
-                        subprocess.call(["sudo", "chmod", "+x", f"{BASE_DIR}/handle_permissions.sh"])
-                        subprocess.call(["sudo", f"{BASE_DIR}/handle_permissions.sh"])
+            # Permissions updaten, damit cron funktioniert und alle Skripte ausführbar sind
+            if PI:
+                subprocess.call(["sudo", "chmod", "+x", f"{BASE_DIR}/handle_permissions.sh"])
+                subprocess.call(["sudo", f"{BASE_DIR}/handle_permissions.sh"])
 
     return render_template("index.html", config=config, standard=standard, form=form, FARBEN_AMERIKANISCH=FARBEN_AMERIKANISCH, FARBEN_GAFOR=FARBEN_GAFOR)
 
