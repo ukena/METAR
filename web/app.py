@@ -173,7 +173,7 @@ def index():
             yaml.dump(config, f)
 
         if PI:
-            if config["zeiten"]["dauerbetrieb"]:
+            if config["zeiten"]["dauerbetrieb"] == "true":
                 # Dauerbetrieb ist aktiv → cronjob anpassen, damit lightsoff.sh nicht ausgeführt wird
                 with open(f"{BASE_DIR}/karte/crontab", "w+") as f:
                     cron_an = f"*/5 * * * *  {BASE_DIR}/karte/refresh.sh"
