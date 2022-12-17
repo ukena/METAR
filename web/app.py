@@ -197,16 +197,15 @@ def index():
                     while i < 3:
                         try:
                             repo.remotes.origin.fetch()
+                            repo.git.reset("--hard")
+                            repo.git.checkout(branch)
+                            repo.git.reset("--hard")
+                            repo.remotes.origin.pull()
                             i += 1
                         except GitCommandError:
                             logging.exception("git reset fehlgeschlagen")
                             sleep(5)
                             i += 1
-
-                    repo.git.reset("--hard")
-                    repo.git.checkout(branch)
-                    repo.git.reset("--hard")
-                    repo.remotes.origin.pull()
 
                     # Permissions updaten, damit cron funktioniert und alle Skripte ausführbar sind
                     if PI:
