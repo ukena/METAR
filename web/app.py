@@ -193,17 +193,17 @@ def index():
                     # repo auf den Stand des remote branches bringen
                     i = 0
                     repo = Repo(BASE_DIR)
-                    while i < 10:
+                    while i < 6:
                         try:
                             repo.remotes.origin.fetch()
                             repo.git.reset("--hard")
                             repo.git.checkout(branch)
                             repo.git.reset("--hard")
                             repo.remotes.origin.pull()
-                            i = 10
+                            i = 6
                         except:
                             logging.exception("git reset fehlgeschlagen")
-                            sleep(6)
+                            sleep(10)
                             i += 1
 
                     # Permissions updaten, damit cron funktioniert und alle Skripte ausführbar sind
