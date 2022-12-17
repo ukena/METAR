@@ -110,7 +110,7 @@ def index():
         for farbe in FARBEN_AMERIKANISCH:
             form["form_" + farbe].data = config["farben_amerikanisch"][farbe]
         # Helligkeit ausfüllen
-        form.form_helligkeit.data = config["helligkeit"]
+        form.form_helligkeit.data = float(config["helligkeit"])
         # Wind ausfüllen
         form.form_normal.data = int(config["wind"]["normal"])
         form.form_hoch.data = int(config["wind"]["hoch"])
