@@ -14,24 +14,18 @@
     <div class="row justify-content-center">
         <div class="col-12 col-lg-10 col-xl-8 mx-auto">
 
-                {% if form.validate() %}
-                <div class="alert alert-info mt-5" role="alert">
-                    Die Einstellungen wurden gespeichert und das System startet jetzt neu. Daher wird das METAR WLAN jetzt ausgeschaltet und es wird versucht, eine Verbindung mit dem eingegebenen WLAN herzustellen.
-                </div>
-                {% else %}
+            <div class="mt-3">
+                {% if form.is_submitted() %}
+                {% for field, errors in form.errors.items() %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ form[field].label }}: {{ ', '.join(errors) }}
+                    </div>
+                {% endfor %}
+                {% endif %}
+            </div>
 
-                <div class="mt-3">
-                    {% if form.is_submitted() %}
-                    {% for field, errors in form.errors.items() %}
-                        <div class="alert alert-danger" role="alert">
-                            {{ form[field].label }}: {{ ', '.join(errors) }}
-                        </div>
-                    {% endfor %}
-                    {% endif %}
-                </div>
-
-                <h5 class="h5 mb-4 mt-4">Hier kannst Du Deine METAR Karte konfigurieren und individuell einstellen. Sobald Du auf speichern klickst, startet das System mit den geänderten Einstellungen neu.</h5>
-                <div class="my-4">
+            <h5 class="h5 mb-4 mt-4">Hier kannst Du Deine METAR Karte konfigurieren und individuell einstellen. Sobald Du auf speichern klickst, startet das System mit den geänderten Einstellungen neu.</h5>
+            <div class="my-4">
                 <nav>
                     <div class="nav nav-tabs" role="tablist">
                         <button class="nav-link active" id="wlan-tab" data-bs-toggle="tab" data-bs-target="#wlan" type="button" role="tab" aria-controls="wlan" aria-selected="true">WLAN</button>
@@ -156,7 +150,6 @@
                     </div>
                 </form>
             </div>
-            {% endif %}
         </div>
     </div>
 </div>

@@ -3,7 +3,7 @@ import subprocess
 from signal import pause
 
 # Button instanziieren
-button = Button(23, hold_time=3)
+button = Button(23)
 
 # Funktion wird ausgeführt, wenn der Button 3 Sekunden gedrückt wird
 def load_settings():
@@ -14,6 +14,6 @@ def load_settings():
     # normales WLAN aktivieren (Verbindung aber erst nach dem Laden der Einstellungen)
     subprocess.call(["wpa_cli", "-i", "wlan0", "enable_network", "0"])
 
-button.when_held = load_settings
+button.when_pressed = load_settings
 
 pause()
