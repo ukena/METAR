@@ -4,7 +4,6 @@ from signal import pause
 from git import Repo
 from time import sleep
 
-###TEST
 # Button instanziieren
 button = Button(23, hold_time=15)
 
