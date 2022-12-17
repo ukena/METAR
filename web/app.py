@@ -9,6 +9,8 @@ from wtforms.widgets import PasswordInput
 import yaml
 import logging
 from git import Repo
+from git.exc import GitCommandError
+from time import sleep
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "GFvKeDNdZ5HVD93CRLWUHZya3f63tFKO"
@@ -165,26 +167,6 @@ def index():
             subprocess.call(["wpa_cli", "-i", "wlan0", "reconfigure"])
             logging.debug("wpa_cli ausgeführt")
 
-            # Update
-            if request.form["form_update"] in ("main", "dev", "hotfix"):
-                branch = "master" if request.form["form_update"] == "main" else request.form["form_update"]
-
-                if branch:
-                    logging.debug(f"git reset auf branch {branch}")
-
-                    # repo auf den Stand des remote branches bringen
-                    repo = Repo(BASE_DIR)
-                    repo.remotes.origin.fetch()
-                    repo.git.reset("--hard")
-                    repo.git.checkout(branch)
-                    repo.git.reset("--hard")
-                    repo.remotes.origin.pull()
-
-                    # Permissions updaten, damit cron funktioniert und alle Skripte ausführbar sind
-                    if PI:
-                        subprocess.call(["sudo", "chmod", "+x", f"{BASE_DIR}/handle_permissions.sh"])
-                        subprocess.call(["sudo", f"{BASE_DIR}/handle_permissions.sh"])
-
             if config["zeiten"]["dauerbetrieb"] == "true":
                 # Dauerbetrieb ist aktiv → cronjob anpassen, damit lightsoff.sh nicht ausgeführt wird
                 with open(f"{BASE_DIR}/karte/crontab", "w+") as f:
@@ -201,6 +183,35 @@ def index():
                     f.write(cron_aus + "\n")
                 subprocess.call(["sudo", "crontab", f"{BASE_DIR}/karte/crontab", "-"])
                 logging.debug(f"cronjob angepasst: {cron_an} und {cron_aus}")
+
+            # Update
+            if request.form["form_update"] in ("main", "dev", "hotfix"):
+                branch = "master" if request.form["form_update"] == "main" else request.form["form_update"]
+
+                if branch:
+                    logging.debug(f"git reset auf branch {branch}")
+
+                    # repo auf den Stand des remote branches bringen
+                    i = 0
+                    repo = Repo(BASE_DIR)
+                    while i < 3:
+                        try:
+                            repo.remotes.origin.fetch()
+                            i += 1
+                        except GitCommandError:
+                            logging.exception("git reset fehlgeschlagen")
+                            sleep(5)
+                            i += 1
+
+                    repo.git.reset("--hard")
+                    repo.git.checkout(branch)
+                    repo.git.reset("--hard")
+                    repo.remotes.origin.pull()
+
+                    # Permissions updaten, damit cron funktioniert und alle Skripte ausführbar sind
+                    if PI:
+                        subprocess.call(["sudo", "chmod", "+x", f"{BASE_DIR}/handle_permissions.sh"])
+                        subprocess.call(["sudo", f"{BASE_DIR}/handle_permissions.sh"])
 
     return render_template("index.html", config=config, standard=standard, form=form, FARBEN_AMERIKANISCH=FARBEN_AMERIKANISCH, FARBEN_GAFOR=FARBEN_GAFOR)
 
