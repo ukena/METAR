@@ -9,7 +9,6 @@ from wtforms.widgets import PasswordInput
 import yaml
 import logging
 from git import Repo
-from git.exc import GitCommandError
 from time import sleep
 
 app = Flask(__name__)
@@ -201,8 +200,8 @@ def index():
                             repo.git.checkout(branch)
                             repo.git.reset("--hard")
                             repo.remotes.origin.pull()
-                            i += 1
-                        except GitCommandError:
+                            i = 3
+                        except:
                             logging.exception("git reset fehlgeschlagen")
                             sleep(5)
                             i += 1
