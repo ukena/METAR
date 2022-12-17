@@ -19,12 +19,19 @@ def load_settings():
 
 def reset_master():
     # repo auf den Stand des remote branches bringen
+    i = 0
     repo = Repo("/home/metar")
-    repo.remotes.origin.fetch()
-    repo.git.reset("--hard")
-    repo.git.checkout("master")
-    repo.git.reset("--hard")
-    repo.remotes.origin.pull()
+    while i < 6:
+        try:
+            repo.remotes.origin.fetch()
+            repo.git.reset("--hard")
+            repo.git.checkout("master")
+            repo.git.reset("--hard")
+            repo.git.pull("origin", "master")
+            i = 6
+        except:
+            sleep(10)
+            i += 1
 
     # Permissions updaten, damit cron funktioniert und alle Skripte ausführbar sind
     subprocess.call(["sudo", "chmod", "+x", "/home/metar/handle_permissions.sh"])
