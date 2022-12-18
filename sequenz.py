@@ -22,7 +22,7 @@ def snake(color):
             pixels[ind] = hex_to_grb(color)
             pixels[next_ind] = hex_to_grb(color)
 
-            sleep(0.3)
+            sleep(0.05)
     pixels.fill(hex_to_grb(color))
 
 
