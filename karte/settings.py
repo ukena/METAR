@@ -10,22 +10,14 @@ Button.was_held = False
 
 def reset_master(btn):
     btn.was_held = True
+    logging.info("Button wurde gahalten")
     # LEDs ausschalten
     subprocess.call(["sudo", "/home/metar/karte/lightsoff.sh"])
-    # repo auf den Stand des remote branches bringen
-    i = 0
+
+    # repo auf den Stand des lokalen reset branches bringen
     repo = Repo("/home/metar")
-    while i < 6:
-        try:
-            repo.remotes.origin.fetch()
-            repo.git.reset("--hard")
-            repo.git.checkout("master")
-            repo.git.reset("--hard")
-            repo.git.pull("origin", "master")
-            i = 6
-        except:
-            sleep(10)
-            i += 1
+    repo.git.checkout("master")
+    repo.git.reset("--hard", "reset")
 
     # Permissions updaten, damit cron funktioniert und alle Skripte ausführbar sind
     subprocess.call(["sudo", "chmod", "+x", "/home/metar/handle_permissions.sh"])
@@ -43,7 +35,6 @@ def load_settings():
 
 def released(btn):
     if not btn.was_held:
-        logging.info("Button wurde gahalten")
         load_settings()
     btn.was_held = False
 

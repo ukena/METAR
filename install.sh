@@ -7,6 +7,9 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # ssh metar@metarmap "nohup sudo /home/metar/install.sh > /dev/null 2>&1 &"
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# reset branch lokal
+git checkout reset
+git checkout master
 # pip, git und lxml installieren
 sudo apt install python3-pip -y
 sudo apt install python3-git -y
