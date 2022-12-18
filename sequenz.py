@@ -19,9 +19,9 @@ def fade():
             next_color = ind + 1 if ind + 1 not in skip else ind + 2
 
 
-            pixels[prev_ind].fill((hex_to_grb("#7f7f7f")))
-            pixels[ind].fill((hex_to_grb("#ffffff")))
-            pixels[next_color].fill((hex_to_grb("#7f7f7f")))
+            pixels[prev_ind] = hex_to_grb("#7f7f7f")
+            pixels[ind] = hex_to_grb("#ffffff")
+            pixels[next_color] = hex_to_grb("#7f7f7f")
             sleep(0.3)
 
 
