@@ -14,7 +14,7 @@ def reset_master(btn):
     # LEDs ausschalten
     subprocess.call(["sudo", "/home/metar/karte/lightsoff.sh"])
     # reset sequenz starten
-    subprocess.call(["sudo", "/home/metar/karte/sequenz.py", "--modus", "snake"])
+    subprocess.call(["sudo", "python", "/home/metar/karte/sequenz.py", "--modus", "snake"])
 
     # repo auf den Stand des lokalen reset branches bringen
     repo = Repo("/home/metar")
@@ -32,7 +32,7 @@ def load_settings():
     # LEDs ausschalten
     subprocess.call(["sudo", "/home/metar/karte/lightsoff.sh"])
     # reset sequenz starten
-    subprocess.call(["sudo", "/home/metar/karte/sequenz.py", "--modus", "snake"])
+    subprocess.call(["sudo", "python", "/home/metar/karte/sequenz.py", "--modus", "snake"])
     # normales WLAN aktivieren (Verbindung aber erst nach dem Laden der Einstellungen)
     subprocess.call(["wpa_cli", "-i", "wlan0", "enable_network", "0"])
 
