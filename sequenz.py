@@ -4,7 +4,7 @@ from time import sleep
 
 colors = ['#ffffff', '#ffff00', '#ff0000', '#7d0000', '#7d007d', '#4b004b', '#0000ff', '#00007d', '#00ff00', '#007d00',
           '#00ADEF', '#005577', '#FEF200', '#7f7800', '#F7921C', '#7b490e', '#4EB849', '#275c24', '#ED1B24', '#760d12']
-skip = [1, 23, 26, 31, 33]
+skip = [1, 23, 26, 31, 33, 95, 96, 97, 98, 99]
 pixels = neopixel.NeoPixel(board.D18, 100)
 
 def hex_to_grb(hex_color):
