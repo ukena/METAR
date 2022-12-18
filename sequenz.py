@@ -13,7 +13,7 @@ def hex_to_grb(hex_color):
     return grb
 
 def fade():
-    for ind, _ in enumerate(pixels):
+    for ind in range(0, 100):
         if ind not in skip:
             prev_ind = ind - 1 if ind - 1 not in skip else ind - 2
             next_color = ind + 1 if ind + 1 not in skip else ind + 2
