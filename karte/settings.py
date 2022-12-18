@@ -39,7 +39,7 @@ def released(btn):
     btn.was_held = False
 
 # Button instanziieren
-button = Button(23, hold_time=15, bounce_time=0.2)
+button = Button(23, hold_time=10, bounce_time=0.2)
 button.when_held = reset_master
 button.when_released = released
 

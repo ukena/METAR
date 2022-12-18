@@ -65,7 +65,9 @@ pixels = neopixel.NeoPixel(LED_PIN, LED_COUNT, brightness=LED_BRIGHTNESS, pixel_
 flugplaetze = [x.strip() for x in config["flugplaetze"]]
 
 # METAR als XML abfragen
-url = "https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&hoursBeforeNow=5&mostRecentForEachStation=true&stationString=" + ",".join(
+# url = "https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&hoursBeforeNow=5&mostRecentForEachStation=true&stationString=" + ",".join(
+#     [item for item in flugplaetze if item != "NULL"])
+url = "https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&startTime=2022-12-16T06:00:00Z&endTime=2022-12-16T08:00:00Z&mostRecentForEachStation=true&stationString=" + ",".join(
     [item for item in flugplaetze if item != "NULL"])
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36 Edg/86.0.622.69'}
 content = requests.get(url, headers=headers).content
