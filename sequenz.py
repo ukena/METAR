@@ -15,13 +15,13 @@ def hex_to_grb(hex_color):
 def fade():
     for ind, _ in enumerate(pixels):
         if ind not in skip:
-            prev_color = pixels[ind - 1] if ind - 1 not in skip else pixels[ind - 2]
-            next_color = pixels[ind + 1] if ind + 1 not in skip else pixels[ind + 2]
+            prev_ind = ind - 1 if ind - 1 not in skip else ind - 2
+            next_color = ind + 1 if ind + 1 not in skip else ind + 2
 
 
-            prev_color.fill((hex_to_grb("#7f7f7f")))
+            pixels[prev_ind].fill((hex_to_grb("#7f7f7f")))
             pixels[ind].fill((hex_to_grb("#ffffff")))
-            next_color.fill((hex_to_grb("#7f7f7f")))
+            pixels[next_color].fill((hex_to_grb("#7f7f7f")))
             sleep(0.3)
 
 
