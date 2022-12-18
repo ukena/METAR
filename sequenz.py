@@ -1,36 +1,41 @@
 import board
 import neopixel
+import argparse
 from time import sleep
-
-colors = ['#ffffff', '#ffff00', '#ff0000', '#7d0000', '#7d007d', '#4b004b', '#0000ff', '#00007d', '#00ff00', '#007d00',
-          '#00ADEF', '#005577', '#FEF200', '#7f7800', '#F7921C', '#7b490e', '#4EB849', '#275c24', '#ED1B24', '#760d12']
-skip = [1, 23, 26, 31, 33, 95, 96, 97, 98, 99]
-pixels = neopixel.NeoPixel(board.D18, 100)
 
 def hex_to_grb(hex_color):
     hex_color = hex_color.replace("#", "")
     grb = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
     return grb
 
-def fade():
+def snake(color):
     for ind in range(0, 100):
         if ind not in skip:
-            prev_prev_prev_ind = min(ind - 3 if ind - 3 not in skip else ind - 4, 99)
-            prev_prev_ind = min(ind - 2 if ind - 2 not in skip else ind - 3, 99)
-            prev_ind = min(ind - 1 if ind - 1 not in skip else ind - 2, 99)
-            next_ind = min(ind + 1 if ind + 1 not in skip else ind + 2, 99)
+            prev_prev_ind = min(ind - 2 if ind - 2 not in skip else ind - 3, 94)
+            prev_ind = min(ind - 1 if ind - 1 not in skip else ind - 2, 94) if ind != 0 else 94
+            next_ind = min(ind + 1 if ind + 1 not in skip else ind + 2, 94)
 
-            pixels[prev_prev_prev_ind] = hex_to_grb("#000000")
             pixels[prev_prev_ind] = hex_to_grb("#000000")
-            pixels[prev_ind] = hex_to_grb("#7f7f7f")
-            pixels[ind] = hex_to_grb("#ffffff")
-            pixels[next_ind] = hex_to_grb("#7f7f7f")
+            pixels[prev_ind] = hex_to_grb(color)
+            pixels[ind] = hex_to_grb(color)
+            pixels[next_ind] = hex_to_grb(color)
 
             sleep(0.3)
 
 
-# try:
-while True:
-    fade()
-# except:
-#     pixels.deinit()
+if __name__ == "__main__":
+    skip = [1, 23, 26, 31, 33, 95, 96, 97, 98, 99]
+    pixels = neopixel.NeoPixel(board.D18, 100)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--modus", type=str, default="snake", choices=["snake", "error"])
+    args = parser.parse_args()
+    modus = args.modus
+
+    while True:
+        try:
+            if modus == "snake":
+                snake(color="#ffffff")
+            elif modus == "error":
+                snake(color="#c90000")
+        except:
+            pixels.deinit()
