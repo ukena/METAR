@@ -10,6 +10,7 @@ Button.was_held = False
 
 def reset_master(btn):
     btn.was_held = True
+    logging.info("Button wurde gahalten")
     # LEDs ausschalten
     subprocess.call(["sudo", "/home/metar/karte/lightsoff.sh"])
 
@@ -34,7 +35,6 @@ def load_settings():
 
 def released(btn):
     if not btn.was_held:
-        logging.info("Button wurde gahalten")
         load_settings()
     btn.was_held = False
 
