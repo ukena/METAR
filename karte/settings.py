@@ -18,6 +18,9 @@ def reset_master(btn):
 
     # repo auf den Stand des lokalen reset branches bringen
     repo = Repo("/home/metar")
+    subprocess.call(["find", ".git/objects/", "-type", "f", "-empty", "|", "xargs", "rm"])
+    repo.git.fetch("-p")
+    repo.git.fsck("--full")
     repo.git.checkout("master")
     repo.git.reset("--hard", "reset")
 
